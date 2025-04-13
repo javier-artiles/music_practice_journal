@@ -48,4 +48,19 @@ struct PreviewExamples {
         );
     }
     
+    
+    static func getPracticeSubItem() -> PracticeSubItem {
+        return PracticeSubItem(
+            name: "Planting",
+            practiceNotes: [
+                PracticeNote(
+                    creationDate: Date(),
+                    latestUpdate: Date(),
+                    title: "This is a note on a sub item",
+                    text: "This is some text in the note itself"
+                ),
+            ]
+        );
+    }
+    
 }

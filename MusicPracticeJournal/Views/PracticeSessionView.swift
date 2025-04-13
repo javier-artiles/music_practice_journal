@@ -99,9 +99,6 @@ struct PracticeSessionView: View {
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: PracticeSession.self, configurations: config)
-    
     let practiceSession = PreviewExamples.getPracticeSession();
     let currentSession = PreviewExamples.getCurrentPracticeSession();
     

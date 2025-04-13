@@ -31,7 +31,7 @@ struct PracticeItemDetailView: View {
                                 Image(systemName: currentSession.isCurrentSubTask(practiceSession: practiceSession, item: practiceItem, subItem: subItem) && currentSession.isTimerRunning() ? "pause.circle" : "play.circle")
                                     .scaleEffect(1.25)
                             }.buttonStyle(PlainButtonStyle())
-                            Text(subItem.name ?? "?")
+                            SubItemEditableNameView(subItemName: subItem.name ?? "", changeName: {newName in subItem.name = newName })
                             Spacer()
                             TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnSubItem(subItem))
                         }.deleteDisabled(practiceItem.practiceSubItems.count == 1)
