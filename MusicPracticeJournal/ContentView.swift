@@ -1,66 +1,38 @@
-//
-//  ContentView.swift
-//  MusicPracticeJournal
-//
-//  Created by Javier Artiles on 3/29/25.
-//
-
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var practiceSessions: [PracticeSession]
 
     var body: some View {
-        NavigationSplitView {
+        NavigationStack {
             List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+                ForEach(practiceSessions) { practiceSession in
+                    NavigationLink(
+                        "\(practiceSession.startTime)",
+                        destination: PracticeSessionView(practiceSession: practiceSession)
+                    )
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: deleteSessions)
             }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
+            NavigationLink("New Practice Session") {
+                PracticeSessionView()
             }
-        } detail: {
-            Text("Select an item")
         }
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+    
+    func deleteSessions(at offsets: IndexSet) {
+        for offset in offsets {
+            let session = practiceSessions[offset]
+            modelContext.delete(session)
         }
     }
 }
 
 #Preview {
+    let currentSession = PreviewExamples.getCurrentPracticeSession();
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: PracticeSession.self, inMemory: true)
+        .environment(currentSession)
 }

@@ -1,18 +1,14 @@
-//
-//  MusicPracticeJournalApp.swift
-//  MusicPracticeJournal
-//
-//  Created by Javier Artiles on 3/29/25.
-//
-
 import SwiftUI
 import SwiftData
 
+
 @main
 struct MusicPracticeJournalApp: App {
+    @State private var currentSession = CurrentPracticeSession();
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            PracticeSession.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -26,6 +22,7 @@ struct MusicPracticeJournalApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(currentSession)
         }
         .modelContainer(sharedModelContainer)
     }
