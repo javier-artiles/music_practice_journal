@@ -10,8 +10,13 @@ struct PracticeSessionView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            Text(practiceSession?.practicePlan.name ?? "...")
-                .font(.title)
+            PracticeSessionEditableNameView(
+                name: practiceSession?.practicePlan.name ?? "",
+                changeName: { newName in
+                    self.practiceSession?.practicePlan.name = newName
+                }
+            )
+            .font(.title)
             List {
                 if let practiceSession = practiceSession {
                     ForEach(practiceSession.practicePlan.practiceItems){ practiceItem in
@@ -104,9 +109,8 @@ struct PracticeSessionView: View {
     
     NavigationStack {
         PracticeSessionView(practiceSession: practiceSession)
-            .environment(currentSession)
             .onAppear {
                 currentSession.currentSession = practiceSession;
             }
-    }
+    }.environment(currentSession)
 }
