@@ -9,10 +9,24 @@ struct ContentView: View {
         NavigationStack {
             List {
                 ForEach(practiceSessions) { practiceSession in
-                    NavigationLink(
-                        "\(practiceSession.startTime)",
-                        destination: PracticeSessionView(practiceSession: practiceSession)
-                    )
+                    NavigationLink {
+                        PracticeSessionView(practiceSession: practiceSession)
+                    } label: {
+                        VStack(alignment: .leading) {
+                            HStack(alignment: .top) {
+                                Text("\(practiceSession.practicePlan.name)")
+                                Spacer()
+                                Text("\(practiceSession.getSecsSpentOnSession()) secs")
+                            }
+                            ForEach(practiceSession.practicePlan.practiceItems) { item in
+                                Text("· " + item.getName())
+                                    .font(.caption)
+                            }
+                            Text("\(practiceSession.startTime.formatted(date: .complete, time: .omitted))")
+                                .font(.caption2)
+                                .padding(.top, 8)
+                        }
+                    }
                 }
                 .onDelete(perform: deleteSessions)
             }
@@ -20,6 +34,16 @@ struct ContentView: View {
                 PracticeSessionView()
             }
         }
+    }
+    
+    func createNewSession() -> PracticeSession {
+        let practicePlan = PracticePlan(name: "My awesome plan", practiceItems: [])
+        let practiceSession = PracticeSession(
+            startTime: Date(),
+            practicePlan: practicePlan
+        );
+        modelContext.insert(practiceSession);
+        return practiceSession;
     }
     
     func deleteSessions(at offsets: IndexSet) {

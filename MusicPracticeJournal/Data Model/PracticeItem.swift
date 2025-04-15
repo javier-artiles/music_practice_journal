@@ -16,6 +16,18 @@ final class PracticeItem: Identifiable {
         self.practiceNotes = practiceNotes
     }
     
+    func getName() -> String {
+        if technique == nil && musicPiece == nil {
+            return "Untitled"
+        } else if technique != nil && musicPiece == nil {
+            return technique!.name
+        } else if musicPiece != nil && technique == nil {
+            return musicPiece!.name
+        } else {
+            return "\(musicPiece!.name) / \(technique!.name)"
+        }
+    }
+    
     func getTitle() -> String {
         if let technique = technique {
             return technique.name

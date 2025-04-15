@@ -27,6 +27,10 @@ final class PracticeSession {
         return totalSecs;
     }
     
+    func getSecsSpentOnSession() -> Int {
+        return secsSpentPerSubItem.reduce(0) {$0 + $1.value};
+    }
+    
     func incrementSecsSpentOnSubItem(_ subItem: PracticeSubItem) {
         secsSpentPerSubItem[subItem.id, default: 0] += 1
     }
