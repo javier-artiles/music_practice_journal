@@ -7,12 +7,20 @@ struct PreviewExamples {
     }
     
     static func getPracticeSession() -> PracticeSession {
-        let subItem = PracticeSubItem(name: "General practice");
-        let item = PracticeItem(
+        let task_1 = PracticeTask(
             technique: Technique(name: "Tremolo"),
-            practiceSubItems: [subItem]
+            practiceSubTasks: [
+                PracticeSubTask(name: "General practice")
+            ]
         )
-        let practicePlan = PracticePlan(name: "My awesome plan", practiceItems: [item])
+        let task_2 = PracticeTask(
+            technique: Technique(name: "Slurs"),
+            practiceSubTasks: [
+                PracticeSubTask(name: "Hammer on"),
+                PracticeSubTask(name: "Pull off")
+            ]
+        )
+        let practicePlan = PracticePlan(name: "My awesome plan", practiceTasks: [task_1, task_2])
         let practiceSession = PracticeSession(
             startTime: Date(),
             practicePlan: practicePlan
@@ -20,11 +28,11 @@ struct PreviewExamples {
         return practiceSession;
     }
     
-    static func getPracticeItem() -> PracticeItem {
-        return PracticeItem(
+    static func getPracticeItem() -> PracticeTask {
+        return PracticeTask(
             technique: Technique(name: "Tremolo"),
-            practiceSubItems: [
-                PracticeSubItem(
+            practiceSubTasks: [
+                PracticeSubTask(
                     name: "Planting",
                     practiceNotes: [
                         PracticeNote(
@@ -35,7 +43,7 @@ struct PreviewExamples {
                         ),
                     ]
                 ),
-                PracticeSubItem(name: "Legato"),
+                PracticeSubTask(name: "Legato"),
             ],
             practiceNotes: [
                 PracticeNote(
@@ -49,8 +57,8 @@ struct PreviewExamples {
     }
     
     
-    static func getPracticeSubItem() -> PracticeSubItem {
-        return PracticeSubItem(
+    static func getPracticeSubItem() -> PracticeSubTask {
+        return PracticeSubTask(
             name: "Planting",
             practiceNotes: [
                 PracticeNote(

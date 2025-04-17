@@ -21,8 +21,10 @@ struct MusicPracticeJournalApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(currentSession)
+            RootView {
+                ContentView()
+                    .environment(currentSession)
+            }
         }
         .modelContainer(sharedModelContainer)
     }

@@ -15,14 +15,14 @@ final class PracticeSession {
         self.endTime = endTime
     }
     
-    func getSecsSpentOnSubItem(_ subItem: PracticeSubItem) -> Int {
+    func getSecsSpentOnSubTask(_ subItem: PracticeSubTask) -> Int {
         return secsSpentPerSubItem[subItem.id] ?? 0
     }
     
-    func getSecsSpentOnItem(_ item: PracticeItem) -> Int {
+    func getSecsSpentOnTask(_ item: PracticeTask) -> Int {
         var totalSecs = 0;
-        for subItem in item.practiceSubItems {
-            totalSecs += getSecsSpentOnSubItem(subItem)
+        for subItem in item.practiceSubTasks {
+            totalSecs += getSecsSpentOnSubTask(subItem)
         }
         return totalSecs;
     }
@@ -31,7 +31,7 @@ final class PracticeSession {
         return secsSpentPerSubItem.reduce(0) {$0 + $1.value};
     }
     
-    func incrementSecsSpentOnSubItem(_ subItem: PracticeSubItem) {
+    func incrementSecsSpentOnSubItem(_ subItem: PracticeSubTask) {
         secsSpentPerSubItem[subItem.id, default: 0] += 1
     }
 }

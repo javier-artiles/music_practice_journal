@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class PracticeSubItem {
+final class PracticeSubTask {
     var id = UUID()
     var name: String?
     var practiceNotes: [PracticeNote]

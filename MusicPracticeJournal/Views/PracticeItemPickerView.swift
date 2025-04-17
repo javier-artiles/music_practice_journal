@@ -3,7 +3,7 @@ import SwiftUI
 struct PracticeItemPickerView: View {
     @Environment(\.dismiss) var dismiss
     
-    let addNewPracticeItem: (PracticeItem) -> Void
+    let addNewPracticeItem: (PracticeTask) -> Void
     
     /*
      TODO: Populate both techniques and pieces at App startup
@@ -47,7 +47,7 @@ struct PracticeItemPickerView: View {
     }
     
     func addTechnique(technique: Technique) {
-        let practiceItem = PracticeItem(
+        let practiceItem = PracticeTask(
             technique: technique
         )
         addNewPracticeItem(practiceItem)
@@ -55,7 +55,7 @@ struct PracticeItemPickerView: View {
     }
     
     func addMusicPiece(musicPiece: MusicPiece) {
-        let practiceItem = PracticeItem(
+        let practiceItem = PracticeTask(
             musicPiece: musicPiece
         )
         addNewPracticeItem(practiceItem)
@@ -64,6 +64,6 @@ struct PracticeItemPickerView: View {
 }
 
 #Preview {
-    let addNewPracticeItem : (PracticeItem) -> Void = { _ in }
+    let addNewPracticeItem : (PracticeTask) -> Void = { _ in }
     PracticeItemPickerView(addNewPracticeItem: addNewPracticeItem)
 }

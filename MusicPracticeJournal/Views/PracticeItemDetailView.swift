@@ -5,7 +5,7 @@ struct PracticeItemDetailView: View {
     @Environment(CurrentPracticeSession.self) private var currentSession
     
     @State var practiceSession: PracticeSession
-    @State var practiceItem: PracticeItem
+    @State var practiceItem: PracticeTask
     
     var body: some View {
         VStack(alignment: .center) {
@@ -13,7 +13,7 @@ struct PracticeItemDetailView: View {
                 .font(.title)
             List {
                 Section {
-                    ForEach(practiceItem.practiceSubItems) { subItem in
+                    ForEach(practiceItem.practiceSubTasks) { subItem in
                         HStack {
                             Button()  {
                                 let isCurrentSubTask = currentSession.isCurrentSubTask(practiceSession: practiceSession, item: practiceItem, subItem: subItem)
@@ -21,8 +21,8 @@ struct PracticeItemDetailView: View {
                                     currentSession.toggleTimer();
                                 } else {
                                     currentSession.currentSession = self.practiceSession
-                                    currentSession.currentItem = practiceItem
-                                    currentSession.currentSubItem = subItem
+                                    currentSession.currentTask = practiceItem
+                                    currentSession.currentSubTask = subItem
                                     if (!currentSession.isTimerRunning()) {
                                         currentSession.toggleTimer();
                                     }
@@ -33,8 +33,8 @@ struct PracticeItemDetailView: View {
                             }.buttonStyle(PlainButtonStyle())
                             SubItemEditableNameView(subItemName: subItem.name ?? "", changeName: {newName in subItem.name = newName })
                             Spacer()
-                            TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnSubItem(subItem))
-                        }.deleteDisabled(practiceItem.practiceSubItems.count == 1)
+                            TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnSubTask(subItem))
+                        }.deleteDisabled(practiceItem.practiceSubTasks.count == 1)
                         ForEach(subItem.practiceNotes) { practiceNote in
                             Text("|| " + practiceNote.title)
                         }.onDelete { indexSet in
@@ -45,7 +45,7 @@ struct PracticeItemDetailView: View {
                     }.onDelete(perform: deletePracticeSubItems)
                     Button("Add a sub-item") {
                         // TODO: sheet dialog?
-                        practiceItem.practiceSubItems.append(PracticeSubItem(name: "New Subitem", practiceNotes: []));
+                        practiceItem.practiceSubTasks.append(PracticeSubTask(name: "New Subitem", practiceNotes: []));
                     }
                 }
                 Section {
@@ -70,7 +70,7 @@ struct PracticeItemDetailView: View {
     
     func deletePracticeSubItems(at offsets: IndexSet) {
         for offset in offsets {
-            practiceItem.practiceSubItems.remove(at: offset)
+            practiceItem.practiceSubTasks.remove(at: offset)
         }
     }
     
@@ -86,7 +86,7 @@ struct PracticeItemDetailView: View {
     let practiceSession = PreviewExamples.getPracticeSession();
     PracticeItemDetailView(
         practiceSession: practiceSession,
-        practiceItem: practiceSession.practicePlan.practiceItems.first!
+        practiceItem: practiceSession.practicePlan.practiceTasks.first!
     )
     .environment(currentSession)
     .onAppear {

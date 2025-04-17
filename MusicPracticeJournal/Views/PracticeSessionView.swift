@@ -13,7 +13,7 @@ struct PracticeSessionView: View {
         if let practiceSession = practiceSession {
             self.practiceSession = practiceSession
         } else {
-            let practicePlan = PracticePlan(name: "My awesome plan", practiceItems: [])
+            let practicePlan = PracticePlan(name: "My awesome plan", practiceTasks: [])
             let newPracticeSession = PracticeSession(
                 startTime: Date(),
                 practicePlan: practicePlan
@@ -33,7 +33,7 @@ struct PracticeSessionView: View {
             )
             .font(.title)
             List {
-                ForEach(practiceSession.practicePlan.practiceItems){ practiceItem in
+                ForEach(practiceSession.practicePlan.practiceTasks){ practiceItem in
                     HStack {
                         Button()  {
                             let isCurrentTask = currentSession.isCurrentTask(practiceSession: practiceSession, item: practiceItem)
@@ -41,8 +41,8 @@ struct PracticeSessionView: View {
                                 currentSession.toggleTimer();
                             } else {
                                 currentSession.currentSession = self.practiceSession
-                                currentSession.currentItem = practiceItem
-                                currentSession.currentSubItem = practiceItem.practiceSubItems.first
+                                currentSession.currentTask = practiceItem
+                                currentSession.currentSubTask = practiceItem.practiceSubTasks.first
                                 if (!currentSession.isTimerRunning()) {
                                     currentSession.toggleTimer();
                                 }
@@ -58,13 +58,13 @@ struct PracticeSessionView: View {
                                 HStack {
                                     Text(practiceItem.getTitle())
                                     Spacer()
-                                    TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnItem(practiceItem))
+                                    TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnTask(practiceItem))
                                 }
-                                if (currentSession.isCurrentTask(practiceSession: practiceSession, item: practiceItem) &&  currentSession.currentSubItem != nil) {
-                                    Text(currentSession.currentSubItem?.name ?? "no-name")
+                                if (currentSession.isCurrentTask(practiceSession: practiceSession, item: practiceItem) &&  currentSession.currentSubTask != nil) {
+                                    Text(currentSession.currentSubTask?.name ?? "no-name")
                                         .font(.caption)
-                                } else if (practiceItem.practiceSubItems.count > 0) {
-                                    Text(practiceItem.practiceSubItems[0].name ?? "no-name")
+                                } else if (practiceItem.practiceSubTasks.count > 0) {
+                                    Text(practiceItem.practiceSubTasks[0].name ?? "no-name")
                                         .font(.caption)
                                 }
                                 
@@ -89,15 +89,15 @@ struct PracticeSessionView: View {
         }
     }
     
-    func addNewPracticeItem(practiceItem: PracticeItem) {
-        let subItem = PracticeSubItem(name: "General practice");
-        practiceItem.practiceSubItems.append(subItem);
-        practiceSession.practicePlan.practiceItems.append(practiceItem);
+    func addNewPracticeItem(practiceItem: PracticeTask) {
+        let subItem = PracticeSubTask(name: "General practice");
+        practiceItem.practiceSubTasks.append(subItem);
+        practiceSession.practicePlan.practiceTasks.append(practiceItem);
     }
     
     func deletePracticeItems(at offsets: IndexSet) {
         for offset in offsets {
-            practiceSession.practicePlan.practiceItems.remove(at: offset)
+            practiceSession.practicePlan.practiceTasks.remove(at: offset)
         }
     }
 }

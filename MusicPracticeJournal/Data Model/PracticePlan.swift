@@ -4,10 +4,10 @@ import SwiftData
 @Model
 final class PracticePlan {
     var name: String = ""
-    var practiceItems: [PracticeItem] = []
+    var practiceTasks: [PracticeTask] = []
     
-    init(name: String, practiceItems: [PracticeItem]) {
+    init(name: String, practiceTasks: [PracticeTask]) {
         self.name = name
-        self.practiceItems = practiceItems
+        self.practiceTasks = practiceTasks
     }
 }

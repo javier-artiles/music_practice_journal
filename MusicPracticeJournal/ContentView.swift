@@ -3,10 +3,16 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(CurrentPracticeSession.self) var currentPracticeSession
     @Query private var practiceSessions: [PracticeSession]
+    @State private var showMiniPlayer: Bool = false
+    @State private var hideMiniPlayer: Bool = false
 
     var body: some View {
         NavigationStack {
+            NavigationLink("New Practice Session") {
+                PracticeSessionView()
+            }
             List {
                 ForEach(practiceSessions) { practiceSession in
                     NavigationLink {
@@ -18,7 +24,7 @@ struct ContentView: View {
                                 Spacer()
                                 Text("\(practiceSession.getSecsSpentOnSession()) secs")
                             }
-                            ForEach(practiceSession.practicePlan.practiceItems) { item in
+                            ForEach(practiceSession.practicePlan.practiceTasks) { item in
                                 Text("· " + item.getName())
                                     .font(.caption)
                             }
@@ -30,14 +36,21 @@ struct ContentView: View {
                 }
                 .onDelete(perform: deleteSessions)
             }
-            NavigationLink("New Practice Session") {
-                PracticeSessionView()
-            }
+        }
+        .universalOverlay(show: $showMiniPlayer) {
+            ExpandableMusicPlayer(
+                show: $showMiniPlayer,
+                hideMiniPlayer: $hideMiniPlayer
+            )
+            .environment(currentPracticeSession)
+        }
+        .onChange(of: currentPracticeSession.currentSession) {
+            showMiniPlayer = currentPracticeSession.currentSession != nil && currentPracticeSession.currentTask != nil
         }
     }
     
     func createNewSession() -> PracticeSession {
-        let practicePlan = PracticePlan(name: "My awesome plan", practiceItems: [])
+        let practicePlan = PracticePlan(name: "My awesome plan", practiceTasks: [])
         let practiceSession = PracticeSession(
             startTime: Date(),
             practicePlan: practicePlan
@@ -56,7 +69,9 @@ struct ContentView: View {
 
 #Preview {
     let currentSession = PreviewExamples.getCurrentPracticeSession();
-    ContentView()
-        .modelContainer(for: PracticeSession.self, inMemory: true)
-        .environment(currentSession)
+    RootView {
+        ContentView()
+    }
+    .environment(currentSession)
+    .modelContainer(for: PracticeSession.self, inMemory: true)
 }

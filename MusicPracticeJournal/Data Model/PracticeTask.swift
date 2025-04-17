@@ -2,17 +2,17 @@ import Foundation
 import SwiftData
 
 @Model
-final class PracticeItem: Identifiable {
+final class PracticeTask: Identifiable {
     var id = UUID()
     var technique: Technique?
     var musicPiece: MusicPiece?
-    var practiceSubItems: [PracticeSubItem]
+    var practiceSubTasks: [PracticeSubTask]
     var practiceNotes: [PracticeNote]
     
-    init(technique: Technique? = nil, musicPiece: MusicPiece? = nil, practiceSubItems: [PracticeSubItem] = [], practiceNotes: [PracticeNote] = []) {
+    init(technique: Technique? = nil, musicPiece: MusicPiece? = nil, practiceSubTasks: [PracticeSubTask] = [], practiceNotes: [PracticeNote] = []) {
         self.technique = technique
         self.musicPiece = musicPiece
-        self.practiceSubItems = practiceSubItems
+        self.practiceSubTasks = practiceSubTasks
         self.practiceNotes = practiceNotes
     }
     
