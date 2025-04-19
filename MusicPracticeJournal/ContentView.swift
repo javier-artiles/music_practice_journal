@@ -10,32 +10,63 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            NavigationLink("New Practice Session") {
-                PracticeSessionView()
-            }
-            List {
-                ForEach(practiceSessions) { practiceSession in
-                    NavigationLink {
-                        PracticeSessionView(practiceSession: practiceSession)
-                    } label: {
-                        VStack(alignment: .leading) {
-                            HStack(alignment: .top) {
-                                Text("\(practiceSession.practicePlan.name)")
-                                Spacer()
-                                Text("\(practiceSession.getSecsSpentOnSession()) secs")
+            ZStack(alignment: .center) {
+                List {
+                    ForEach(practiceSessions) { practiceSession in
+                        NavigationLink {
+                            PracticeSessionView(practiceSession: practiceSession)
+                        } label: {
+                            VStack(alignment: .leading) {
+                                HStack(alignment: .top) {
+                                    Text("\(practiceSession.practicePlan.name)")
+                                    Spacer()
+                                    Text("\(practiceSession.getSecsSpentOnSession()) secs")
+                                }
+                                ForEach(practiceSession.practicePlan.practiceTasks) { item in
+                                    Text("· " + item.getName())
+                                        .font(.caption)
+                                }
+                                Text("\(practiceSession.startTime.formatted(date: .complete, time: .omitted))")
+                                    .font(.caption2)
+                                    .padding(.top, 8)
                             }
-                            ForEach(practiceSession.practicePlan.practiceTasks) { item in
-                                Text("· " + item.getName())
-                                    .font(.caption)
-                            }
-                            Text("\(practiceSession.startTime.formatted(date: .complete, time: .omitted))")
-                                .font(.caption2)
-                                .padding(.top, 8)
                         }
                     }
+                    .onDelete(perform: deleteSessions)
                 }
-                .onDelete(perform: deleteSessions)
+                .contentMargins(.top, 40)
+                
+                if (practiceSessions.isEmpty) {
+                    VStack {
+                        Image(.welcome)
+                            .resizable()
+                            .frame(width: 60, height: 60)
+                            .padding(10)
+                        Text("Start Practicing")
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        Text("Create your first practice session.")
+                            .foregroundColor(.gray)
+                        Text("Tap the plus button to get started.")
+                            .foregroundColor(.gray)
+                        
+                    }
+                }
             }
+            .safeAreaInset(edge: VerticalEdge.bottom) {
+                NavigationLink {
+                    PracticeSessionView()
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundColor(.red)
+                        .padding(25)
+                        .background(.white)
+                        .clipShape(Circle())
+                        .shadow(radius: 10, x: 0, y: 6)
+                }
+            }
+            .navigationBarTitleDisplayMode(.large)
             .navigationTitle("Practice Journal")
         }
         .universalOverlay(show: $showMiniPlayer) {
