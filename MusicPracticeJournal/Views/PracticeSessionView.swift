@@ -8,6 +8,7 @@ struct PracticeSessionView: View {
     @State var practiceSession: PracticeSession
     @State private var showingPracticeItemPicker: Bool = false
     private var shouldInsertNewPracticeSession: Bool = false
+    private var dateFormatter: DateFormatter
     
     init(practiceSession: PracticeSession? = nil) {
         if let practiceSession = practiceSession {
@@ -21,17 +22,21 @@ struct PracticeSessionView: View {
             self.practiceSession = newPracticeSession;
             self.shouldInsertNewPracticeSession = true;
         }
+        self.dateFormatter = DateFormatter()
+        self.dateFormatter.setLocalizedDateFormatFromTemplate("EEEE, MMMM dd")
     }
     
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .leading) {
             PracticeSessionEditableNameView(
                 name: practiceSession.practicePlan.name,
                 changeName: { newName in
                     self.practiceSession.practicePlan.name = newName
                 }
             )
-            .font(.title)
+            .font(.title2)
+            .padding(.top, 15)
+            .padding(.leading, 20)
             List {
                 ForEach(practiceSession.practicePlan.practiceTasks){ practiceItem in
                     HStack {
@@ -80,7 +85,7 @@ struct PracticeSessionView: View {
             Spacer()
         }
         .sheet(isPresented: $showingPracticeItemPicker) {
-            PracticeItemPickerView(addNewPracticeItem: self.addNewPracticeItem)
+            PracticeTaskPickerView(addNewPracticeItem: self.addNewPracticeItem)
         }
         .onAppear {
             if shouldInsertNewPracticeSession {
@@ -111,5 +116,7 @@ struct PracticeSessionView: View {
             .onAppear {
                 currentSession.currentSession = practiceSession;
             }
-    }.environment(currentSession)
+    }
+    .environment(currentSession)
+    .modelContainer(PreviewExamples.previewContainer)
 }

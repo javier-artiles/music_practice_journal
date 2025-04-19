@@ -7,7 +7,7 @@ struct ContentView: View {
     @Query private var practiceSessions: [PracticeSession]
     @State private var showMiniPlayer: Bool = false
     @State private var hideMiniPlayer: Bool = false
-
+    
     var body: some View {
         NavigationStack {
             NavigationLink("New Practice Session") {
@@ -36,6 +36,7 @@ struct ContentView: View {
                 }
                 .onDelete(perform: deleteSessions)
             }
+            .navigationTitle("Practice Journal")
         }
         .universalOverlay(show: $showMiniPlayer) {
             ExpandableMusicPlayer(
@@ -73,5 +74,5 @@ struct ContentView: View {
         ContentView()
     }
     .environment(currentSession)
-    .modelContainer(for: PracticeSession.self, inMemory: true)
+    .modelContainer(PreviewExamples.previewContainer)
 }

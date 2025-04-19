@@ -8,9 +8,36 @@ struct PracticeItemDetailView: View {
     @State var practiceItem: PracticeTask
     
     var body: some View {
-        VStack(alignment: .center) {
-            Text(practiceItem.getTitle())
-                .font(.title)
+        VStack(alignment: .leading) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    Text(practiceItem.getTitle())
+                        .font(.title)
+                    if let altWorkTitle = practiceItem.work?.alternativeTitle {
+                        Text(altWorkTitle)
+                            .italic()
+                    }
+                    if let composerName = practiceItem.work?.composerName {
+                        Text(composerName)
+                    }
+                }
+                Spacer()
+                if practiceItem.work?.composerId != nil || practiceItem.work?.id != nil  {
+                    Menu {
+                        if let composerId = practiceItem.work?.composerId {
+                            Link("Composer at IMSLP", destination: URL(string: "https://imslp.org/wiki/\(composerId)")!)
+                        }
+                        if let workId = practiceItem.work?.id {
+                            Link("Work at IMSLP", destination: URL(string: "https://imslp.org/wiki/\(workId)")!)
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                }
+                
+            }
+            .padding(.leading, 15)
+            .padding(.trailing, 15)
             List {
                 Section {
                     ForEach(practiceItem.practiceSubTasks) { subItem in
@@ -84,12 +111,15 @@ struct PracticeItemDetailView: View {
 #Preview {
     let currentSession = PreviewExamples.getCurrentPracticeSession();
     let practiceSession = PreviewExamples.getPracticeSession();
-    PracticeItemDetailView(
-        practiceSession: practiceSession,
-        practiceItem: practiceSession.practicePlan.practiceTasks.first!
-    )
-    .environment(currentSession)
-    .onAppear {
-        currentSession.currentSession = practiceSession;
+    
+    NavigationStack {
+        PracticeItemDetailView(
+            practiceSession: practiceSession,
+            practiceItem: practiceSession.practicePlan.practiceTasks.first!
+        )
+        .environment(currentSession)
+        .onAppear {
+            currentSession.currentSession = practiceSession;
+        }
     }
 }
