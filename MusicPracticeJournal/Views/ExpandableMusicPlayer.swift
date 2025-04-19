@@ -273,7 +273,7 @@ struct ExpandableMusicPlayer: View {
             }
             .onAppear {
                 currentSession.currentSession = PreviewExamples.getPracticeSession()
-                currentSession.currentTask = currentSession.currentSession?.practicePlan.practiceTasks.first
+                currentSession.currentTask = currentSession.currentSession?.practiceTasks.first
                 currentSession.currentSubTask = currentSession.currentTask?.practiceSubTasks.first
                 showMiniPlayer = true
             }

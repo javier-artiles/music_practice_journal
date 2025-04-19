@@ -3,16 +3,32 @@ import SwiftData
 
 @Model
 final class PracticeSession {
+    var name: String
     var startTime: Date
-    var practicePlan: PracticePlan
-    var endTime: Date?
+    var practiceTasks: [PracticeTask]
     
     var secsSpentPerSubItem: [UUID: Int] = [:]
     
-    init(startTime: Date,  practicePlan: PracticePlan, endTime: Date? = nil) {
+    init(startTime: Date = Date(), practiceTasks: [PracticeTask] = [], name: String = "") {
         self.startTime = startTime
-        self.practicePlan = practicePlan
-        self.endTime = endTime
+        if !name.isEmpty {
+            self.name = name
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.setLocalizedDateFormatFromTemplate("EEEE, MMMM dd")
+            self.name = dateFormatter.string(from: startTime)
+        }
+        self.practiceTasks = practiceTasks
+    }
+    
+    func isDefaultName() -> Bool {
+        return name == getDefaultSessionName()
+    }
+    
+    func getDefaultSessionName() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.setLocalizedDateFormatFromTemplate("EEEE, MMMM dd")
+        return dateFormatter.string(from: self.startTime)
     }
     
     func getSecsSpentOnSubTask(_ subItem: PracticeSubTask) -> Int {

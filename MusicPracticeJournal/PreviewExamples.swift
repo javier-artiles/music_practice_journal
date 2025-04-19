@@ -56,12 +56,15 @@ class PreviewExamples {
                 PracticeSubTask(name: "Pull off")
             ]
         )
-        let practicePlan = PracticePlan(name: "My awesome plan", practiceTasks: [task_1, task_2])
         let practiceSession = PracticeSession(
             startTime: Date(),
-            practicePlan: practicePlan
+            practiceTasks: [task_1, task_2]
         );
         return practiceSession;
+    }
+    
+    static func getEmptyPracticeSession() -> PracticeSession {
+        return PracticeSession();
     }
     
     static func getPracticeItem() -> PracticeTask {

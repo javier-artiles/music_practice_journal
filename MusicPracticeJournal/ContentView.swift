@@ -18,11 +18,11 @@ struct ContentView: View {
                         } label: {
                             VStack(alignment: .leading) {
                                 HStack(alignment: .top) {
-                                    Text("\(practiceSession.practicePlan.name)")
+                                    Text("\(practiceSession.name)")
                                     Spacer()
                                     Text("\(practiceSession.getSecsSpentOnSession()) secs")
                                 }
-                                ForEach(practiceSession.practicePlan.practiceTasks) { item in
+                                ForEach(practiceSession.practiceTasks) { item in
                                     Text("· " + item.getName())
                                         .font(.caption)
                                 }
@@ -79,16 +79,6 @@ struct ContentView: View {
         .onChange(of: currentPracticeSession.currentSession) {
             showMiniPlayer = currentPracticeSession.currentSession != nil && currentPracticeSession.currentTask != nil
         }
-    }
-    
-    func createNewSession() -> PracticeSession {
-        let practicePlan = PracticePlan(name: "My awesome plan", practiceTasks: [])
-        let practiceSession = PracticeSession(
-            startTime: Date(),
-            practicePlan: practicePlan
-        );
-        modelContext.insert(practiceSession);
-        return practiceSession;
     }
     
     func deleteSessions(at offsets: IndexSet) {

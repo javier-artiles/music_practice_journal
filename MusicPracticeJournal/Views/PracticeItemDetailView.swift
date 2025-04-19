@@ -115,7 +115,7 @@ struct PracticeItemDetailView: View {
     NavigationStack {
         PracticeItemDetailView(
             practiceSession: practiceSession,
-            practiceItem: practiceSession.practicePlan.practiceTasks.first!
+            practiceItem: practiceSession.practiceTasks.first!
         )
         .environment(currentSession)
         .onAppear {

@@ -76,7 +76,7 @@ class CurrentPracticeSession {
     public func getNextTask() -> PracticeTask? {
         guard let currentSession = self.currentSession,
               let currentTask = self.currentTask else { return nil }
-        let practiceTasks = currentSession.practicePlan.practiceTasks
+        let practiceTasks = currentSession.practiceTasks
         let currentTaskIndex = practiceTasks.firstIndex(of: currentTask)
         guard let index = currentTaskIndex else { return nil }
         return practiceTasks.indices.contains(index + 1) ? practiceTasks[index + 1] : nil
@@ -85,7 +85,7 @@ class CurrentPracticeSession {
     public func getPrevTask() -> PracticeTask? {
         guard let currentSession = self.currentSession,
               let currentTask = self.currentTask else { return nil }
-        let practiceTasks = currentSession.practicePlan.practiceTasks
+        let practiceTasks = currentSession.practiceTasks
         let currentTaskIndex = practiceTasks.firstIndex(of: currentTask)
         guard let index = currentTaskIndex else { return nil }
         return practiceTasks.indices.contains(index - 1) ? practiceTasks[index - 1] : nil
