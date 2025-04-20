@@ -9,7 +9,7 @@ class PreviewExamples {
             let config = ModelConfiguration(isStoredInMemoryOnly: true)
             let container = try ModelContainer(for: Work.self, configurations: config)
 
-            for i in 1...9 {
+            for i in 1...99 {
                 let work = Work(
                     id: String.init(format: "%02d", i),
                     title: "Work \(i)",
@@ -19,6 +19,14 @@ class PreviewExamples {
                     instrumentation: ["guitar"]
                 )
                 container.mainContext.insert(work)
+            }
+            
+            for i in 1...99 {
+                let technique = Technique(
+                    name: "Techique \(i)",
+                    classification: "Technique type \(i % 10)"
+                )
+                container.mainContext.insert(technique)
             }
             return container
         } catch {

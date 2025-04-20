@@ -34,21 +34,33 @@ struct MusicPracticeJournalApp: App {
                         return;
                     }
                     
+                    print("Loading techniques...")
+                    guard let techniquesUrl = Bundle.main.url(forResource: "techniques", withExtension: "json") else {
+                        fatalError("Failed to find techniques.json")
+                    }
+                    let techniquesData = try Data(contentsOf: techniquesUrl)
+                    let techniques = try JSONDecoder().decode([Technique].self, from: techniquesData)
+                    print("Inserting \(techniques.count) techniques...")
+                    for i in 0...(techniques.count - 1)  {
+                        let technique = techniques[i]
+                        sharedModelContainer.mainContext.insert(technique)
+                    }
+                    
                     print("Loading works...")
-                    guard let url = Bundle.main.url(forResource: "works", withExtension: "lzfse") else {
+                    guard let worksUrl = Bundle.main.url(forResource: "works", withExtension: "lzfse") else {
                         fatalError("Failed to find works.lzfse")
                     }
-                    let compressedData = try Data(contentsOf: url)
-                    let data = try (compressedData as NSData).decompressed(using: .lzfse)
+                    let compressedWorksData = try Data(contentsOf: worksUrl)
+                    let worksData = try (compressedWorksData as NSData).decompressed(using: .lzfse)
                     
                     print("Decoding works...")
-                    let works = try JSONDecoder().decode([Work].self, from: data as Data)
+                    let works = try JSONDecoder().decode([Work].self, from: worksData as Data)
                     
                     print("Inserting \(works.count) works...")
                     for i in 0...(works.count - 1)  {
                         let work = works[i]
                         sharedModelContainer.mainContext.insert(work)
-                        if i % 1000 == 0 {
+                        if i % 10000 == 0 {
                             try sharedModelContainer.mainContext.save()
                         }
                     }
