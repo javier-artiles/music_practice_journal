@@ -1,0 +1,566 @@
+[
+  {
+    "name": "Accent",
+    "classification": "General"
+  },
+  {
+    "name": "Air Sounds (Aeolian Sounds)",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Air Sounds / Breath Attacks",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Arpeggiation",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Articulation",
+    "classification": "Voice"
+  },
+  {
+    "name": "Bariolage",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Barre Chord / Barring",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Bas dans les Cordes",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Belt",
+    "classification": "Voice"
+  },
+  {
+    "name": "Bend (String Bending, Pre-bending)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Bisbigliando",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Bowing Behind the Bridge",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Bowing on the Bridge",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Bowing the Body/Tailpiece",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Breath Control",
+    "classification": "Voice, Brass, Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Buzz Roll",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Chest Voice",
+    "classification": "Voice"
+  },
+  {
+    "name": "Chicken Pickin'",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Choking",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Circular Breathing",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Classical Guitar Strokes (Apoyando, Tirando)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Col Legno (Col Legno Battuto, Col Legno Tratto)",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Collé",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Crescendo",
+    "classification": "General"
+  },
+  {
+    "name": "Damping/Muffling",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Damping/Muffling (Étouffé, Laissez vibrer)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Détaché",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Diminuendo / Decrescendo",
+    "classification": "General"
+  },
+  {
+    "name": "Doodle Tongue",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Double Stops",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Double Tonguing",
+    "classification": "Brass, Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Drag (Ruff)",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Dynamics (pianississimo, pianissimo, piano, mezzo piano, mezzo forte, forte, fortissimo, fortississimo)",
+    "classification": "General"
+  },
+  {
+    "name": "Embouchure",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Embouchure (related to vowel/resonance shaping)",
+    "classification": "Voice"
+  },
+  {
+    "name": "Extended Techniques (Playing with Nails, Sons Xylophoniques, Bartók Pizzicato, Sons Pincés, Thunder Effect, Percussive Effects, Whistling Sound, Tuning Key Slide, Fretting)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Falsetto",
+    "classification": "Voice"
+  },
+  {
+    "name": "Fingerpicking (Fingerstyle) (Travis picking)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Flam",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Flutter Tonguing",
+    "classification": "Brass, Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Fortepiano",
+    "classification": "General"
+  },
+  {
+    "name": "Fret Hand Muting",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Ghost Note",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Glissando",
+    "classification": "General"
+  },
+  {
+    "name": "Glissando (Bisbigliando Glissando)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Growling",
+    "classification": "Brass, Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Half-Valve",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Hammer-on (Hammer-on from nowhere)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Harmonics",
+    "classification": "Plucked, Bowed String Instruments"
+  },
+  {
+    "name": "Harmonics / Overblowing",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Head Voice",
+    "classification": "Voice"
+  },
+  {
+    "name": "Hooked Bowing",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Hybrid Picking",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Jazz Articulations and Effects (Fall, Doit, Scoop / Lift, Plop, Bend, Rip, Shake)",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Jet Whistle (Flute)",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Key Clicks",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Left-Hand Pizzicato",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Legato",
+    "classification": "General"
+  },
+  {
+    "name": "Legato Tonguing",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Legato Tonguing (Soft Tonguing)",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Lip Trill / Shake",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Marcato",
+    "classification": "General"
+  },
+  {
+    "name": "Martelé",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Microtones",
+    "classification": "General"
+  },
+  {
+    "name": "Mixed Voice",
+    "classification": "Voice"
+  },
+  {
+    "name": "Multiphonics",
+    "classification": "Brass, Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Multiple Stops (Double Stop, Triple Stop, Quadruple Stop)",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Mute (Con Sordino / Con Sord.)",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Mutes (Straight Mute, Cup Mute, Harmon Mute, Plunger Mute, Bucket Mute, Practice Mute, Solotone, Pixie, Derby Hat, Stop Mute)",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Ornaments (Trill, Mordent, Turn, Appoggiatura, Acciaccatura)",
+    "classification": "General"
+  },
+  {
+    "name": "Palm Muting",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Pedal Tones",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Pedaling (for instruments like Timpani, Vibraphone)",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Pick Scrapes",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Pitch Bend",
+    "classification": "General"
+  },
+  {
+    "name": "Pitch Bending / Glissando",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Pitch Bending / Lip Slurs",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Pitch Shifting / Correction",
+    "classification": "General"
+  },
+  {
+    "name": "Pizzicato",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Plectrum (Pick) Use (downstrokes, upstrokes, alternate picking, tremolo picking, sweep picking, economy picking, rake)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Plucking",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Portamento",
+    "classification": "General"
+  },
+  {
+    "name": "Portato (Louré)",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Portato (Mezzo Staccato, Non-Legato)",
+    "classification": "General"
+  },
+  {
+    "name": "Près de la Table",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Press Roll",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Pull-off",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Rasgueado",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Rhythmic Grouping/Feel (Groove, Syncopation, Polyrhythm)",
+    "classification": "General"
+  },
+  {
+    "name": "Ricochet / Jeté",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Rim Shot",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Rinforzando",
+    "classification": "General"
+  },
+  {
+    "name": "Roll (e.g., Snare Roll, Timpani Roll)",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Rubbing",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Runs and Riffs",
+    "classification": "Voice"
+  },
+  {
+    "name": "Sautillé (Saltando/Saltato)",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Scat Singing",
+    "classification": "Voice"
+  },
+  {
+    "name": "Scraping",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Scratch Tone",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Sforzando",
+    "classification": "General"
+  },
+  {
+    "name": "Shaking",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Single Tonguing",
+    "classification": "Brass, Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Slap Tongue",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Slapping/Popping",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Slide (Slide Guitar)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Slide Glissando",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Slide Operation",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Slur",
+    "classification": "General"
+  },
+  {
+    "name": "Snap Pizzicato (Bartók Pizzicato)",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Spiccato",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Staccatissimo",
+    "classification": "General"
+  },
+  {
+    "name": "Staccato",
+    "classification": "General"
+  },
+  {
+    "name": "Staccato Tonguing",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Stopped Horn",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Stopping",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Striking/Hitting",
+    "classification": "Percussion Instruments"
+  },
+  {
+    "name": "Strumming (downstrokes, upstrokes, brush strokes, muted strums)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Subito",
+    "classification": "General"
+  },
+  {
+    "name": "Subtone",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Sul Ponticello",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Sul Tasto",
+    "classification": "Bowed String Instruments"
+  },
+  {
+    "name": "Tapping (Two-Handed Tapping)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Tempo Changes (Accelerando, Ritardando, Rallentando, Ritenuto, A Tempo, Stringendo, Affrettando)",
+    "classification": "General"
+  },
+  {
+    "name": "Tempo Flexibility (Rubato, Ad libitum, A piacere, Suivez)",
+    "classification": "General"
+  },
+  {
+    "name": "Tempo Markings (Grave, Largo, Lento, Adagio, Andante, Moderato, Allegretto, Allegro, Vivace, Presto, Prestissimo)",
+    "classification": "General"
+  },
+  {
+    "name": "Tenuto",
+    "classification": "General"
+  },
+  {
+    "name": "Timbral Trills (Bisbigliando)",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Tongue Stop / Tongue Ram (Flute)",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Tremolo",
+    "classification": "General"
+  },
+  {
+    "name": "Tremolo Picking",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Triple Tonguing",
+    "classification": "Brass, Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Valve Operation",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Valve Tremolo (Timbral Trill / Bisbigliando)",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Valve/Key Clicks",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Vibrato",
+    "classification": "General"
+  },
+  {
+    "name": "Vibrato (Jaw Vibrato, Hand Vibrato, Slide Vibrato, Diaphragm Vibrato)",
+    "classification": "Brass Instrument Techniques"
+  },
+  {
+    "name": "Vocal Fry",
+    "classification": "Voice"
+  },
+  {
+    "name": "Volume Swells (Violining)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Whammy Bar Techniques (vibrato, dive bombs, scoops, doops, flutters, shrieks)",
+    "classification": "Plucked String Instruments"
+  },
+  {
+    "name": "Whistle Tones (Flute)",
+    "classification": "Woodwind Instrument Techniques"
+  },
+  {
+    "name": "Yodeling",
+    "classification": "Voice"
+  }
+]
