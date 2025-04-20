@@ -1,6 +1,17 @@
 import SwiftUI
 import SwiftData
 
+class SearchContext: ObservableObject {
+    init() {
+       $query
+           .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+           .assign(to: &$debouncedQuery)
+    }
+
+    @Published var query = ""
+    @Published var debouncedQuery = ""
+}
+
 struct TasksSearchResultsListView: View {
     @Environment(\.modelContext) private var modelContext
     
@@ -10,24 +21,25 @@ struct TasksSearchResultsListView: View {
     @State var totalWorks: Int = 0
     @State var shouldLoadMoreWorks: Bool = false
     
-    let searchText: String
+    var searchContext: SearchContext
     let pickedWork: (Work) -> Void
     let pickedTechnique: (Technique) -> Void
     
     init(
-        searchText: String,
+        searchContext: SearchContext,
         pickedWork: @escaping (Work) -> Void,
         pickedTechnique: @escaping (Technique) -> Void
     ) {
-        self.searchText = searchText
+        self.searchContext = searchContext
         self.pickedWork = pickedWork
         self.pickedTechnique = pickedTechnique
         
         // Total techniques are so few that can be fetched in one go
         // Works are deferred to a separate task with pagination
+        let debouncedQuery = searchContext.debouncedQuery
         let techniqueDescriptor = FetchDescriptor<Technique>(
             predicate: #Predicate { technique in
-                technique.name.localizedStandardContains(searchText)
+                technique.name.localizedStandardContains(debouncedQuery)
             },
             sortBy: [SortDescriptor(\Technique.name, order: .forward)]
         )
@@ -37,7 +49,7 @@ struct TasksSearchResultsListView: View {
     var body: some View {
         // For debugging purposes
         /*
-        Text("'\(searchText)' found \(totalWorks) works")
+        Text("'\(searchContext.debouncedQuery)' found \(totalWorks) works")
         Text("shouldLoadMoreWorks '\(shouldLoadMoreWorks)'")
         */
         List {
@@ -94,20 +106,20 @@ struct TasksSearchResultsListView: View {
             }
         }
         .onAppear {
-            self.works = fetchWorks(query: searchText)
-            self.totalWorks = fetchTotalWorksCount(query: searchText)
+            self.works = fetchWorks(query: searchContext.debouncedQuery)
+            self.totalWorks = fetchTotalWorksCount(query: searchContext.debouncedQuery)
         }
-        .onChange(of: searchText) {
-            self.works = fetchWorks(query: searchText)
-            self.totalWorks = fetchTotalWorksCount(query: searchText)
+        .onChange(of: searchContext.debouncedQuery) {
+            self.works = fetchWorks(query: searchContext.debouncedQuery)
+            self.totalWorks = fetchTotalWorksCount(query: searchContext.debouncedQuery)
         }
         .onChange(of: shouldLoadMoreWorks) {
             if shouldLoadMoreWorks {
                 self.shouldLoadMoreWorks = false
                 if works.count < totalWorks {
-                    let moreWorks = fetchWorks(query: searchText, offset: works.count)
+                    let moreWorks = fetchWorks(query: searchContext.debouncedQuery, offset: works.count)
                     self.works.append(contentsOf: moreWorks)
-                    self.totalWorks = fetchTotalWorksCount(query: searchText)
+                    self.totalWorks = fetchTotalWorksCount(query: searchContext.debouncedQuery)
                 }
             }
         }
@@ -146,8 +158,7 @@ struct TasksSearchResultsListView: View {
         } catch {
             print("Failed to fetch works: \(error)")
         }
-        print("Fetched \(fetchedWorks.count) works for the query \(searchText), offset \(offset), limit \(limit)")
-        self.latestFetchedSearchText = query
+        print("Fetched \(fetchedWorks.count) works for the query \(searchContext.debouncedQuery), offset \(offset), limit \(limit)")
         return fetchedWorks;
     }
 }
@@ -155,7 +166,8 @@ struct TasksSearchResultsListView: View {
 struct PracticeTaskPickerView: View {
     @Environment(\.dismiss) var dismiss
     
-    @State private var searchText = ""
+    @StateObject var searchContext = SearchContext()
+    
     @State private var selection: Int = 0
     
     @Query private var works: [Work]
@@ -165,9 +177,9 @@ struct PracticeTaskPickerView: View {
     var body: some View {
         NavigationStack {
             // Do not search single letter queries
-            if searchText.count >= 2 {
+            if searchContext.query.count >= 2 {
                 TasksSearchResultsListView(
-                    searchText: searchText,
+                    searchContext: searchContext,
                     pickedWork: pickedWork,
                     pickedTechnique: pickedTechnique
                 ).toolbar {
@@ -177,7 +189,7 @@ struct PracticeTaskPickerView: View {
                 }
             }
         }
-        .searchable(text: $searchText, prompt: "Search")
+        .searchable(text: $searchContext.query, prompt: "Search")
     }
     
     func pickedWork(work: Work) {
