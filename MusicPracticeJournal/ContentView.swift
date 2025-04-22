@@ -20,7 +20,7 @@ struct ContentView: View {
                                 HStack(alignment: .top) {
                                     Text("\(practiceSession.name)")
                                     Spacer()
-                                    Text("\(practiceSession.getSecsSpentOnSession()) secs")
+                                    TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnSession())
                                 }.padding(.bottom, 5)
                                 ForEach(practiceSession.practiceTasks) { item in
                                     HStack {

@@ -27,24 +27,27 @@ struct PracticeSessionView: View {
                         .padding(.leading, 20)
                 }
                 List {
-                    ForEach(practiceSession.practiceTasks){ practiceItem in
+                    ForEach(practiceSession.practiceTasks) { practiceItem in
                         HStack {
-                            Button()  {
-                                let isCurrentTask = currentSession.isCurrentTask(practiceSession: practiceSession, item: practiceItem)
-                                if (isCurrentTask) {
-                                    currentSession.toggleTimer();
-                                } else {
-                                    currentSession.currentSession = self.practiceSession
-                                    currentSession.currentTask = practiceItem
-                                    currentSession.currentSubTask = practiceItem.practiceSubTasks.first
-                                    if (!currentSession.isTimerRunning()) {
-                                        currentSession.toggleTimer();
-                                    }
-                                }
-                            } label: {
-                                Image(systemName: currentSession.isCurrentTask(practiceSession: practiceSession, item: practiceItem) && currentSession.isTimerRunning() ? "pause.circle" : "play.circle")
-                                    .scaleEffect(1.5)
-                            }.buttonStyle(PlainButtonStyle())
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(
+                                    self.currentSession.isCurrentTask(practiceSession: practiceSession, item: practiceItem)
+                                    ? .red : .gray
+                                )
+                                .frame(width: 6)
+                        
+                            if let technique = practiceItem.technique {
+                                SharedElements.getTechniqueImage(isUserCreated: technique.isUserCreated)
+                                    .padding(.trailing, 5)
+                                    .padding(.top, 5)
+                                    .background(.white)
+                            } else if let work = practiceItem.work {
+                                SharedElements.getWorkImage(isUserCreated: work.isUserCreated)
+                                    .padding(.trailing, 5)
+                                    .padding(.top, 5)
+                                    .background(.white)
+                            }
+                            
                             NavigationLink {
                                 PracticeItemDetailView(practiceSession: practiceSession, practiceItem: practiceItem)
                             } label: {
@@ -65,6 +68,10 @@ struct PracticeSessionView: View {
                                 }
                             }
                         }
+                        .listRowInsets(EdgeInsets())
+                        .padding(.leading, 10)
+                        .padding(.trailing, 10)
+                        .padding(.vertical, 10)
                     }
                     .onDelete(perform: deletePracticeItems)
                 }
@@ -90,6 +97,43 @@ struct PracticeSessionView: View {
         }
         .safeAreaInset(edge: .bottom) {
             HStack {
+                Spacer()
+                Button {
+                    currentSession.clearSession()
+                } label: {
+                    Image(systemName: "stop.fill")
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundColor(currentSession.isPracticeSet() ? .red : .gray)
+                        .padding(15)
+                        .background(.white)
+                        .clipShape(Circle())
+                        .shadow(radius: 10, x: 0, y: 6)
+                }
+                .disabled(!currentSession.isPracticeSet())
+                Spacer()
+                Button {
+                    if !self.currentSession.isPracticeSet() {
+                        if let firstTask = practiceSession.practiceTasks.first,
+                           let firstSubTask = firstTask.practiceSubTasks.first {
+                            self.currentSession.setPractice(
+                                session: practiceSession,
+                                task: firstTask,
+                                subTask: firstSubTask
+                            )
+                        }
+                    }
+                    currentSession.toggleTimer()
+                } label: {
+                    Image(systemName: !currentSession.isTimerRunning() ? "play.fill" : "pause.fill")
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundColor(!practiceSession.practiceTasks.isEmpty ? .red : .gray)
+                        .padding(15)
+                        .background(.white)
+                        .clipShape(Circle())
+                        .shadow(radius: 10, x: 0, y: 6)
+                }
+                .disabled(practiceSession.practiceTasks.isEmpty)
+                Spacer()
                 NavigationLink {
                     PracticeTaskPickerView(addNewPracticeItem: self.addNewPracticeItem)
                 } label: {
@@ -101,8 +145,8 @@ struct PracticeSessionView: View {
                         .clipShape(Circle())
                         .shadow(radius: 10, x: 0, y: 6)
                 }
+                Spacer()
             }
-            
         }
         .navigationTitle(practiceSession.name)
         .toolbar {

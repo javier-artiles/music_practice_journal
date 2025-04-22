@@ -54,7 +54,7 @@ struct ExpandableMusicPlayer: View {
             }
             .frame(height: expandPlayer ? nil : 55, alignment: .top)
             .frame(maxHeight: .infinity, alignment: .bottom)
-            .padding(.bottom, expandPlayer ? 0 : safeArea.bottom + 55)
+            .padding(.bottom, expandPlayer ? 0 : safeArea.bottom + 90)
             .padding(.horizontal, expandPlayer ? 0 : 15)
             .offset(y: offsetY)
             .gesture(
@@ -104,14 +104,17 @@ struct ExpandableMusicPlayer: View {
     @ViewBuilder
     func MiniPlayer() -> some View {
         HStack(spacing: 12) {
-            Button()  {
-                practiceSession.toggleTimer();
-            } label: {
-                Image(systemName:  practiceSession.isTimerRunning() ? "pause.circle" : "play.circle")
-                    .scaleEffect(2)
-                    .padding(.leading, 5)
-            }.buttonStyle(PlainButtonStyle())
-            
+            if let technique = practiceSession.currentTask?.technique {
+                SharedElements.getTechniqueImage(isUserCreated: technique.isUserCreated)
+                    .padding(.trailing, 5)
+                    .padding(.top, 5)
+                    .background(.white)
+            } else if let work = practiceSession.currentTask?.work {
+                SharedElements.getWorkImage(isUserCreated: work.isUserCreated)
+                    .padding(.trailing, 5)
+                    .padding(.top, 5)
+                    .background(.white)
+            }
             VStack(alignment: .leading) {
                 Text(practiceSession.currentTask?.getTitle() ?? "")
                 Text(practiceSession.currentSubTask?.name ?? "")
@@ -131,25 +134,6 @@ struct ExpandableMusicPlayer: View {
         .padding(.horizontal, 10)
         .frame(height: 55)
         .contentShape(.rect)
-        .gesture(
-            DragGesture()
-                .onChanged { gesture in
-                    // TODO: work out a horizontal animation to give feedback on the presence of this control
-                    // self.offsetX = gesture.translation.width
-                }
-                .onEnded { gesture in
-                    let isHorizontalDrag = abs(gesture.translation.width) > abs(gesture.translation.height)
-                    
-                    if isHorizontalDrag {
-                        self.show = false
-                        if gesture.translation.width > 0 {
-                            print("Swipe Right")
-                        } else {
-                            print("Swipe Left")
-                        }
-                    }
-                }
-        )
         .onTapGesture {
             withAnimation(.smooth(duration: 0.3, extraBounce: 0)) {
                 expandPlayer = true

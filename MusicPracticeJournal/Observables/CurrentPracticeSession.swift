@@ -9,6 +9,25 @@ class CurrentPracticeSession {
     
     var timer: Timer?
     
+    public func setPractice(session: PracticeSession, task: PracticeTask, subTask: PracticeSubTask) {
+        self.currentSession = session
+        self.currentTask = task
+        self.currentSubTask = subTask
+    }
+    
+    public func isPracticeSet() -> Bool {
+        return currentSession != nil && currentTask != nil && currentSubTask != nil
+    }
+    
+    public func clearSession() {
+        self.currentSession = nil
+        self.currentTask = nil
+        self.currentSubTask = nil
+        if isTimerRunning() {
+            toggleTimer()
+        }
+    }
+    
     public func toggleTimer() {
         if let timer = timer {
             timer.invalidate()

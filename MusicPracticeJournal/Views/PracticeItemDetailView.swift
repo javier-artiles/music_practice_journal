@@ -42,6 +42,12 @@ struct PracticeItemDetailView: View {
                 Section {
                     ForEach(practiceItem.practiceSubTasks) { subItem in
                         HStack {
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(
+                                    currentSession.isCurrentSubTask(practiceSession: practiceSession, item: practiceItem, subItem: subItem)
+                                    ? .red : .gray
+                                )
+                                .frame(width: 6)
                             Button()  {
                                 let isCurrentSubTask = currentSession.isCurrentSubTask(practiceSession: practiceSession, item: practiceItem, subItem: subItem)
                                 if (isCurrentSubTask) {
@@ -61,37 +67,64 @@ struct PracticeItemDetailView: View {
                             SubItemEditableNameView(subItemName: subItem.name ?? "", changeName: {newName in subItem.name = newName })
                             Spacer()
                             TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnSubTask(subItem))
-                        }.deleteDisabled(practiceItem.practiceSubTasks.count == 1)
+                        }
+                        .listRowInsets(EdgeInsets())
+                        .padding(.leading, 10)
+                        .padding(.trailing, 10)
+                        .padding(.vertical, 10)
+                        .deleteDisabled(practiceItem.practiceSubTasks.count == 1)
                         ForEach(subItem.practiceNotes) { practiceNote in
                             Text("|| " + practiceNote.title)
-                        }.onDelete { indexSet in
+                        }
+                        .onDelete { indexSet in
                             for offset in indexSet {
                                 subItem.practiceNotes.remove(at: offset)
                             }
                         }
                     }.onDelete(perform: deletePracticeSubItems)
-                    Button("Add a sub-item") {
-                        // TODO: sheet dialog?
-                        practiceItem.practiceSubTasks.append(PracticeSubTask(name: "New Subitem", practiceNotes: []));
-                    }
                 }
                 Section {
                     ForEach(practiceItem.practiceNotes) { practiceNote in
                         Text(practiceNote.title)
                     }.onDelete(perform: deletePracticeItemNotes)
-                    Button("Add a note") {
-                        // TODO: sheet dialog?
-                        let newPracticeNote = PracticeNote(
-                            creationDate: Date(),
-                            latestUpdate: Date(),
-                            title: "New Note",
-                            text: ""
-                        );
-                        practiceItem.practiceNotes.append(newPracticeNote);
-                    }
                 }
             }
             Spacer()
+        }
+        .safeAreaInset(edge: .bottom) {
+            HStack {
+                Spacer()
+                Button {
+                    let newPracticeNote = PracticeNote(
+                        creationDate: Date(),
+                        latestUpdate: Date(),
+                        title: "New Note",
+                        text: ""
+                    );
+                    practiceItem.practiceNotes.append(newPracticeNote);
+                } label: {
+                    Image(systemName: "document.badge.plus")
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundColor(.red)
+                        .padding(15)
+                        .background(.white)
+                        .clipShape(Circle())
+                        .shadow(radius: 10, x: 0, y: 6)
+                }
+                Spacer()
+                Button {
+                    practiceItem.practiceSubTasks.append(PracticeSubTask(name: "New Subitem", practiceNotes: []));
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundColor(.red)
+                        .padding(15)
+                        .background(.white)
+                        .clipShape(Circle())
+                        .shadow(radius: 10, x: 0, y: 6)
+                }
+                Spacer()
+            }
         }
     }
     
