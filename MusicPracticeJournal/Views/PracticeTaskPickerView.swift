@@ -20,6 +20,7 @@ struct TasksSearchResultsListView: View {
     @State var works: [Work] = []
     @State var totalWorks: Int = 0
     @State var shouldLoadMoreWorks: Bool = false
+    @State var showingTechniqueDeleteAlert: Bool = false
     
     var searchContext: SearchContext
     let pickedWork: (Work) -> Void
@@ -58,9 +59,7 @@ struct TasksSearchResultsListView: View {
                     pickedTechnique(technique)
                 } label: {
                     HStack(alignment: .top) {
-                        Image(systemName: "oar.2.crossed")
-                            .fontWeight(.bold)
-                            .foregroundColor(.gray)
+                        SharedElements.getTechniqueImage(isUserCreated: technique.isUserCreated)
                             .padding(.trailing, 5)
                             .padding(.top, 5)
                             .background(.white)
@@ -71,16 +70,47 @@ struct TasksSearchResultsListView: View {
                                 .font(.caption)
                         }
                     }
-                }.buttonStyle(.plain)
+                }
+                .buttonStyle(.plain)
+                .alert(
+                    "Confirmation",
+                    isPresented: $showingTechniqueDeleteAlert
+                ) {
+                    Button("Delete", role: .destructive) {
+                        deleteTechnique(technique)
+                    }
+                    Button("Cancel", role: .cancel) { }
+                }
+                message: {
+                    Text("Deleting this technique will also remove all tasks associated to it on your practice sessions. Are you sure?")
+                }
+                .swipeActions {
+                    NavigationLink {
+                        UserTechniqueEditView(technique: technique)
+                    } label: {
+                        Text("Edit")
+                            
+                    }
+                    .tint(.green)
+                    if technique.isUserCreated {
+                        Button {
+                            self.showingTechniqueDeleteAlert = true
+                        } label: {
+                            Text("Delete")
+                        }
+                        .tint(.red)
+                        
+                    }
+                }
             }
+            
+            
             ForEach(works) { work in
                 Button {
                     pickedWork(work)
                 } label: {
                     HStack(alignment: .top) {
-                        Image(systemName: "music.quarternote.3")
-                            .fontWeight(.bold)
-                            .foregroundColor(.gray)
+                        SharedElements.getWorkImage(isUserCreated: work.isUserCreated)
                             .padding(.trailing, 5)
                             .padding(.top, 5)
                             .background(.white)
@@ -100,7 +130,7 @@ struct TasksSearchResultsListView: View {
                     }
                 }.buttonStyle(.plain)
             }
-            VStack {
+            ZStack {
             }.onAppear {
                 self.shouldLoadMoreWorks = true
             }
@@ -121,6 +151,44 @@ struct TasksSearchResultsListView: View {
                     self.works.append(contentsOf: moreWorks)
                     self.totalWorks = fetchTotalWorksCount(query: searchContext.debouncedQuery)
                 }
+            }
+        }
+    }
+    
+    private func deleteTechnique(_ technique: Technique) {
+        if technique.isUserCreated {
+            do {
+                // Clean up all tasks that have been orphaned
+                let name = technique.name
+                let classification = technique.classification
+                
+                let orphanedTasksDescriptor = FetchDescriptor<PracticeTask>(
+                    predicate: #Predicate<PracticeTask> { task in
+                        return  task.technique?.isUserCreated ?? false &&
+                            task.technique?.name == name &&
+                        task.technique?.classification == classification
+                    }
+                )
+                let orphanedTasks = try modelContext.fetch(orphanedTasksDescriptor)
+                
+                for orphanedTask in orphanedTasks {
+                    for session in orphanedTask.sessions {
+                        session.practiceTasks.removeAll(where: {$0 === orphanedTask})
+                        for subTask in orphanedTask.practiceSubTasks {
+                            session.secsSpentPerSubItem.removeValue(forKey: subTask.id)
+                        }
+                    }
+                }
+                
+                for orphanedTask in orphanedTasks {
+                    print("Delete orphaned task: \(orphanedTask)")
+                    modelContext.delete(orphanedTask)
+                }
+                
+                modelContext.delete(technique)
+                try modelContext.save()
+            } catch {
+                print("Error saving after deleting technique: \(error)")
             }
         }
     }
@@ -169,27 +237,42 @@ struct PracticeTaskPickerView: View {
     @StateObject var searchContext = SearchContext()
     
     @State private var selection: Int = 0
-    
-    @Query private var works: [Work]
+    @State var presentUserTechniqueCreation: Bool = false
     
     let addNewPracticeItem: (PracticeTask) -> Void
     
     var body: some View {
-        NavigationStack {
-            // Do not search single letter queries
-            if searchContext.query.count >= 2 {
-                TasksSearchResultsListView(
-                    searchContext: searchContext,
-                    pickedWork: pickedWork,
-                    pickedTechnique: pickedTechnique
-                ).toolbar {
-                    ToolbarItemGroup(placement: .primaryAction) {
-                        Button("Add", systemImage: "plus") {}
+        TasksSearchResultsListView(
+            searchContext: searchContext,
+            pickedWork: pickedWork,
+            pickedTechnique: pickedTechnique
+        )
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        
+                    } label: {
+                        Text("Add a new work")
                     }
+                    Button {
+                        presentUserTechniqueCreation.toggle()
+                    } label: {
+                        Text("Add a new technique")
+                    }
+                } label: {
+                    Image(systemName: "plus")
                 }
             }
         }
-        .searchable(text: $searchContext.query, prompt: "Search")
+        .sheet(isPresented: $presentUserTechniqueCreation) {
+            UserTechniqueCreationView(createdTechnique: createdTechnique)
+        }
+        .searchable(
+            text: $searchContext.query,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Search for a work or technique"
+        )
     }
     
     func pickedWork(work: Work) {
@@ -207,12 +290,23 @@ struct PracticeTaskPickerView: View {
         addNewPracticeItem(practiceItem)
         dismiss()
     }
+    
+    func createdTechnique(technique: Technique) {
+        self.presentUserTechniqueCreation = false
+        let practiceItem = PracticeTask(
+            technique: technique
+        )
+        addNewPracticeItem(practiceItem)
+        dismiss()
+    }
 }
 
 #Preview {
     let addNewPracticeItem : (PracticeTask) -> Void = { _ in }
-    PracticeTaskPickerView(
-        addNewPracticeItem: addNewPracticeItem
-    )
+    NavigationStack {
+        PracticeTaskPickerView(
+            addNewPracticeItem: addNewPracticeItem
+        )
         .modelContainer(PreviewExamples.previewContainer)
+    }
 }

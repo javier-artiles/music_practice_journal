@@ -21,10 +21,21 @@ struct ContentView: View {
                                     Text("\(practiceSession.name)")
                                     Spacer()
                                     Text("\(practiceSession.getSecsSpentOnSession()) secs")
-                                }
+                                }.padding(.bottom, 5)
                                 ForEach(practiceSession.practiceTasks) { item in
-                                    Text("· " + item.getName())
-                                        .font(.caption)
+                                    HStack {
+                                        if let technique = item.technique {
+                                            SharedElements.getTechniqueImage(isUserCreated: technique.isUserCreated)
+                                            Text(item.getName())
+                                                .font(.caption)
+                                                .lineLimit(1)
+                                        } else if let work = item.work {
+                                            SharedElements.getWorkImage(isUserCreated: work.isUserCreated)
+                                            Text(item.getName())
+                                                .font(.caption)
+                                        }
+                                        
+                                    }
                                 }
                                 Text("\(practiceSession.startTime.formatted(date: .complete, time: .omitted))")
                                     .font(.caption2)
@@ -91,6 +102,7 @@ struct ContentView: View {
 
 #Preview {
     let currentSession = PreviewExamples.getCurrentPracticeSession();
+    
     RootView {
         ContentView()
     }

@@ -6,7 +6,6 @@ struct PracticeSessionView: View {
     @Environment(CurrentPracticeSession.self) private var currentSession
     
     @State var practiceSession: PracticeSession
-    @State private var showingPracticeItemPicker: Bool = false
     @State private var showingSessionRenamingAlert: Bool = false
     private var shouldInsertNewPracticeSession: Bool = false
     
@@ -86,14 +85,13 @@ struct PracticeSessionView: View {
                         .foregroundColor(.gray)
                         .padding(.leading, 40)
                         .padding(.trailing, 40)
-                    
                 }
             }
         }
         .safeAreaInset(edge: .bottom) {
             HStack {
-                Button {
-                    showingPracticeItemPicker.toggle()
+                NavigationLink {
+                    PracticeTaskPickerView(addNewPracticeItem: self.addNewPracticeItem)
                 } label: {
                     Image(systemName: "plus")
                         .font(.largeTitle.weight(.bold))
@@ -127,9 +125,6 @@ struct PracticeSessionView: View {
                     practiceSession.name = practiceSession.getDefaultSessionName()
                 }
             })
-        }
-        .sheet(isPresented: $showingPracticeItemPicker) {
-            PracticeTaskPickerView(addNewPracticeItem: self.addNewPracticeItem)
         }
         .onAppear {
             if shouldInsertNewPracticeSession {

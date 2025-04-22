@@ -17,14 +17,16 @@ final class Work: Decodable {
     var composerName: String?
     var composerId: String?
     var instrumentation: [String]
+    var isUserCreated: Bool
     
-    internal init(id: String, title: String, alternativeTitle: String? = nil, composerName: String? = nil, composerId: String? = nil, instrumentation: [String] = []) {
+    internal init(id: String, title: String, alternativeTitle: String? = nil, composerName: String? = nil, composerId: String? = nil, instrumentation: [String] = [], isUserCreated: Bool = false) {
         self.id = id
         self.title = title
         self.alternativeTitle = alternativeTitle
         self.composerName = composerName
         self.composerId = composerId
         self.instrumentation = instrumentation
+        self.isUserCreated = isUserCreated
     }
     
     required init(from decoder: Decoder) throws {
@@ -51,6 +53,7 @@ final class Work: Decodable {
         } else {
             self.instrumentation = []
         }
+        self.isUserCreated = false
     }
 }
 

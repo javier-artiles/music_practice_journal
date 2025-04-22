@@ -9,11 +9,14 @@ final class PracticeTask: Identifiable {
     var practiceSubTasks: [PracticeSubTask]
     var practiceNotes: [PracticeNote]
     
+    @Relationship(inverse: \PracticeSession.practiceTasks) var sessions: [PracticeSession]
+    
     init(technique: Technique? = nil, work: Work? = nil, practiceSubTasks: [PracticeSubTask] = [], practiceNotes: [PracticeNote] = []) {
         self.technique = technique
         self.work = work
         self.practiceSubTasks = practiceSubTasks
         self.practiceNotes = practiceNotes
+        self.sessions = []
     }
     
     func getName() -> String {

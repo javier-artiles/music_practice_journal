@@ -11,7 +11,7 @@ class PreviewExamples {
 
             for i in 1...99 {
                 let work = Work(
-                    id: String.init(format: "%02d", i),
+                    id: String.init(format: "%03d", i),
                     title: "Work \(i)",
                     alternativeTitle: "Alternative title \(i)",
                     composerName: "Composer \(i % 3)",
@@ -28,6 +28,10 @@ class PreviewExamples {
                 )
                 container.mainContext.insert(technique)
             }
+            
+            let practiceSession = getPracticeSession()
+            container.mainContext.insert(practiceSession)
+            
             return container
         } catch {
             fatalError("Failed to create model container for previewing: \(error.localizedDescription)")
@@ -46,6 +50,13 @@ class PreviewExamples {
             composerName: "Composer 1",
             composerId: "composer_1",
             instrumentation: ["guitar"]
+        )
+    }
+    
+    static func getSingleTechnique() -> Technique {
+        return Technique(
+            name: "Slurs",
+            classification: "Plucked string instruments"
         )
     }
     

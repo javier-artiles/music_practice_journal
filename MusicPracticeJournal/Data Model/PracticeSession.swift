@@ -6,7 +6,6 @@ final class PracticeSession {
     var name: String
     var startTime: Date
     var practiceTasks: [PracticeTask]
-    
     var secsSpentPerSubItem: [UUID: Int] = [:]
     
     init(startTime: Date = Date(), practiceTasks: [PracticeTask] = [], name: String = "") {
