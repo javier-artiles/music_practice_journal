@@ -35,7 +35,7 @@ struct MusicPracticeJournalApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView {
+            VStack {
                 if dataImportState == .unknown {
                     // show nothing here
                 } else if dataImportState == .insertingWorks {
@@ -51,8 +51,10 @@ struct MusicPracticeJournalApp: App {
                         self.dataImportState.rawValue
                     )
                 } else {
-                    ContentView()
-                        .environment(currentSession)
+                    RootView {
+                        ContentView()
+                            .environment(currentSession)
+                    }
                 }
             }
             .onAppear() {
