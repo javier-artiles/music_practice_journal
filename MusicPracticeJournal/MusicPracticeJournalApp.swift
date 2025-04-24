@@ -1,10 +1,21 @@
 import SwiftUI
 import SwiftData
 
+enum DataImportState: String {
+    case loadingWorks = "Loading works..."
+    case decodingWorks = "Decoding works..."
+    case insertingWorks = "Inserting works..."
+    case completed = "Completed"
+    case failed = "Failed"
+    case unknown = "Unknown"
+}
 
 @main
 struct MusicPracticeJournalApp: App {
     @State private var currentSession = CurrentPracticeSession();
+    @State private var dataImportState: DataImportState = .unknown;
+    @State private var numLoadedWorks: Int = 0;
+    
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -25,54 +36,49 @@ struct MusicPracticeJournalApp: App {
     var body: some Scene {
         WindowGroup {
             RootView {
-                ContentView()
-                    .environment(currentSession)
+                if dataImportState == .unknown {
+                    // show nothing here
+                } else if dataImportState == .insertingWorks {
+                    VStack(alignment: .center) {
+                        ProgressView(
+                            self.dataImportState.rawValue,
+                            value: Double(self.numLoadedWorks),
+                            total: Double(232400)
+                        )
+                    }.padding()
+                } else if dataImportState == .decodingWorks || dataImportState == .loadingWorks {
+                    ProgressView(
+                        self.dataImportState.rawValue
+                    )
+                } else {
+                    ContentView()
+                        .environment(currentSession)
+                }
             }
-            .task {
-                do {
-                    let existingWorks = try sharedModelContainer.mainContext.fetchCount(FetchDescriptor<Work>())
-                    print("Number of existing works: \(existingWorks)")
-                    if existingWorks > 0 {
-                        return;
-                    }
-                    
-                    print("Loading techniques...")
-                    guard let techniquesUrl = Bundle.main.url(forResource: "techniques", withExtension: "json") else {
-                        fatalError("Failed to find techniques.json")
-                    }
-                    let techniquesData = try Data(contentsOf: techniquesUrl)
-                    let techniques = try JSONDecoder().decode([Technique].self, from: techniquesData)
-                    print("Inserting \(techniques.count) techniques...")
-                    for i in 0...(techniques.count - 1)  {
-                        let technique = techniques[i]
-                        sharedModelContainer.mainContext.insert(technique)
-                    }
-                    
-                    print("Loading works...")
-                    guard let worksUrl = Bundle.main.url(forResource: "works", withExtension: "lzfse") else {
-                        fatalError("Failed to find works.lzfse")
-                    }
-                    let compressedWorksData = try Data(contentsOf: worksUrl)
-                    let worksData = try (compressedWorksData as NSData).decompressed(using: .lzfse)
-                    
-                    print("Decoding works...")
-                    let works = try JSONDecoder().decode([Work].self, from: worksData as Data)
-                    
-                    print("Inserting \(works.count) works...")
-                    for i in 0...(works.count - 1)  {
-                        let work = works[i]
-                        sharedModelContainer.mainContext.insert(work)
-                        if i % 10000 == 0 {
-                            try sharedModelContainer.mainContext.save()
+            .onAppear() {
+                let existingWorks = try! sharedModelContainer.mainContext.fetchCount(FetchDescriptor<Work>())
+                print("Number of existing works: \(existingWorks)")
+                if existingWorks > 0 {
+                    self.dataImportState = .completed
+                    return;
+                } else {
+                    let backgroundImporter = BackgroundImporter(modelContainer: sharedModelContainer, updateImportProgress: updateImportProgress)
+                    Task {
+                        do {
+                            try await backgroundImporter.backgroundInsert()
+                        } catch {
+                            print("Background importer failed: \(error)")
+                            self.dataImportState = .failed
                         }
                     }
-                    try sharedModelContainer.mainContext.save()
-                    print("Saved")
-                } catch {
-                    print("Failed to populate database \(error)")
                 }
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+    
+    func updateImportProgress(dataImportState: DataImportState, numLoadedWorks: Int) {
+        self.dataImportState = dataImportState
+        self.numLoadedWorks = numLoadedWorks
     }
 }
