@@ -85,13 +85,18 @@ struct PracticeItemDetailView: View {
                                 subItem.practiceNotes.remove(at: offset)
                             }
                         }
-                    }.onDelete(perform: deletePracticeSubItems)
+                    }
+                    .onDelete(perform: deletePracticeSubItems)
+                    .onMove(perform: movePracticeSubItem)
                 }
                 Section {
                     ForEach(practiceItem.practiceNotes) { practiceNote in
                         Text(practiceNote.title)
                     }.onDelete(perform: deletePracticeItemNotes)
                 }
+            }
+            .toolbar {
+                EditButton()
             }
             Spacer()
         }
@@ -117,7 +122,7 @@ struct PracticeItemDetailView: View {
                 }
                 Spacer()
                 Button {
-                    practiceItem.practiceSubTasks.append(PracticeSubTask(name: "New Subitem", practiceNotes: []));
+                    appendNewSubTask()
                 } label: {
                     Image(systemName: "plus")
                         .font(.largeTitle.weight(.bold))
@@ -132,16 +137,35 @@ struct PracticeItemDetailView: View {
         }
     }
     
+    func movePracticeSubItem(from source: IndexSet, to destination: Int) {
+         // We move on a separate mutable array, since `practiceSubTasks` is a computed property
+         var mutableSubTasks = practiceItem.practiceSubTasks.map { $0 }
+         mutableSubTasks.move(fromOffsets: source, toOffset: destination)
+         // Update sort indexes
+         for i in 0 ..< mutableSubTasks.count {
+             mutableSubTasks[i].sortIndex = i
+         }
+         try? modelContext.save()
+     }
+    
+    func appendNewSubTask() {
+        let subTask = PracticeSubTask(name: "New Subitem", practiceNotes: [])
+        practiceItem.appendSubTask(subTask)
+        try? modelContext.save()
+    }
+    
     func deletePracticeSubItems(at offsets: IndexSet) {
         for offset in offsets {
             practiceItem.practiceSubTasks.remove(at: offset)
         }
+        try? modelContext.save()
     }
     
     func deletePracticeItemNotes(at offsets: IndexSet) {
         for offset in offsets {
             practiceItem.practiceNotes.remove(at: offset)
         }
+        try? modelContext.save()
     }
 }
 

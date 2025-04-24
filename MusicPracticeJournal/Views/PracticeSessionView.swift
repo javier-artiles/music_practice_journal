@@ -174,7 +174,7 @@ struct PracticeSessionView: View {
                 }
             })
         }
-        .onAppear {
+        .onAppear {	
             if shouldInsertNewPracticeSession {
                 modelContext.insert(self.practiceSession);
             }

@@ -6,7 +6,20 @@ final class PracticeTask: Identifiable {
     var id = UUID()
     var technique: Technique?
     var work: Work?
-    var practiceSubTasks: [PracticeSubTask]
+    /// Persistent storage for subtasks (unordered by default)
+    var practiceSubTasksPersistent: [PracticeSubTask]
+    
+    /// Computed property returning tasks sorted by `sortIndex`.
+     var practiceSubTasks: [PracticeSubTask] {
+         get {
+             practiceSubTasksPersistent.sorted { $0.sortIndex < $1.sortIndex }
+         }
+         set {
+             // Update the persistent array while maintaining order.
+             practiceSubTasksPersistent = newValue
+         }
+     }
+    
     var practiceNotes: [PracticeNote]
     var sortIndex: Int
     
@@ -15,11 +28,20 @@ final class PracticeTask: Identifiable {
     init(technique: Technique? = nil, work: Work? = nil, practiceSubTasks: [PracticeSubTask] = [], practiceNotes: [PracticeNote] = [], sortIndex: Int = 0) {
         self.technique = technique
         self.work = work
-        self.practiceSubTasks = practiceSubTasks
+        self.practiceSubTasksPersistent = practiceSubTasks
         self.practiceNotes = practiceNotes
         self.sortIndex = sortIndex
         self.session = nil
     }
+    
+    /// Helper method to add a subtask and sort automatically.
+     func appendSubTask(_ subTask: PracticeSubTask) {
+         if let lastSubTask = practiceSubTasksPersistent.last {
+             subTask.sortIndex = lastSubTask.sortIndex + 1
+         }
+         practiceSubTasksPersistent.append(subTask)
+         practiceSubTasksPersistent.sort { $0.sortIndex < $1.sortIndex }
+     }
     
     func getName() -> String {
         if technique == nil && work == nil {
