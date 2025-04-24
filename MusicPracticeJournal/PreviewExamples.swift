@@ -66,14 +66,16 @@ class PreviewExamples {
             practiceSubTasks: [
                 PracticeSubTask(name: "Section A"),
                 PracticeSubTask(name: "Section B"),
-            ]
+            ],
+            sortIndex: 0
         )
         let task_2 = PracticeTask(
             technique: Technique(name: "Slurs"),
             practiceSubTasks: [
                 PracticeSubTask(name: "Hammer on"),
                 PracticeSubTask(name: "Pull off")
-            ]
+            ],
+            sortIndex: 1
         )
         let practiceSession = PracticeSession(
             startTime: Date(),
@@ -110,7 +112,8 @@ class PreviewExamples {
                     title: "This is a note",
                     text: "This is some text in the note itself"
                 ),
-            ]
+            ],
+            sortIndex: 0
         );
     }
     

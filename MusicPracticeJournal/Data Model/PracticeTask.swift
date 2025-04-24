@@ -8,15 +8,17 @@ final class PracticeTask: Identifiable {
     var work: Work?
     var practiceSubTasks: [PracticeSubTask]
     var practiceNotes: [PracticeNote]
+    var sortIndex: Int
     
-    @Relationship(inverse: \PracticeSession.practiceTasks) var sessions: [PracticeSession]
+    @Relationship(inverse: \PracticeSession.practiceTasksPersistent) var session: PracticeSession?
     
-    init(technique: Technique? = nil, work: Work? = nil, practiceSubTasks: [PracticeSubTask] = [], practiceNotes: [PracticeNote] = []) {
+    init(technique: Technique? = nil, work: Work? = nil, practiceSubTasks: [PracticeSubTask] = [], practiceNotes: [PracticeNote] = [], sortIndex: Int = 0) {
         self.technique = technique
         self.work = work
         self.practiceSubTasks = practiceSubTasks
         self.practiceNotes = practiceNotes
-        self.sessions = []
+        self.sortIndex = sortIndex
+        self.session = nil
     }
     
     func getName() -> String {

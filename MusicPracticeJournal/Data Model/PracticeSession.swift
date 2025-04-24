@@ -5,7 +5,19 @@ import SwiftData
 final class PracticeSession {
     var name: String
     var startTime: Date
-    var practiceTasks: [PracticeTask]
+    /// Persistent storage for tasks (unordered by default)
+    var practiceTasksPersistent: [PracticeTask]
+    /// Computed property returning tasks sorted by `sortIndex`.
+    var practiceTasks: [PracticeTask] {
+        get {
+            practiceTasksPersistent.sorted { $0.sortIndex < $1.sortIndex }
+        }
+        set {
+            // Update the persistent array while maintaining order.
+            practiceTasksPersistent = newValue
+        }
+    }
+    
     var secsSpentPerSubItem: [UUID: Int] = [:]
     
     init(startTime: Date = Date(), practiceTasks: [PracticeTask] = [], name: String = "") {
@@ -17,7 +29,16 @@ final class PracticeSession {
             dateFormatter.setLocalizedDateFormatFromTemplate("EEEE, MMMM dd")
             self.name = dateFormatter.string(from: startTime)
         }
-        self.practiceTasks = practiceTasks
+        self.practiceTasksPersistent = practiceTasks
+    }
+    
+    /// Helper method to add a task and sort automatically.
+    func appendTask(_ task: PracticeTask) {
+        if let lastTask = practiceTasksPersistent.last {
+            task.sortIndex = lastTask.sortIndex + 1
+        }
+        practiceTasksPersistent.append(task)
+        practiceTasksPersistent.sort { $0.sortIndex < $1.sortIndex }
     }
     
     func isDefaultName() -> Bool {

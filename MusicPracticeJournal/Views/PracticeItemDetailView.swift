@@ -22,7 +22,11 @@ struct PracticeItemDetailView: View {
                     }
                 }
                 Spacer()
-                if practiceItem.work?.composerId != nil || practiceItem.work?.id != nil  {
+                if practiceItem.work?.isUserCreated ?? false {
+                    if let url = URL(string:  practiceItem.work?.userSuppliedURI ?? "") {
+                        Link("Link", destination: url)
+                    }
+                } else if practiceItem.work?.composerId != nil || practiceItem.work?.id != nil  {
                     Menu {
                         if let composerId = practiceItem.work?.composerId {
                             Link("Composer at IMSLP", destination: URL(string: "https://imslp.org/wiki/\(composerId)")!)

@@ -11,8 +11,10 @@ struct UserTechniqueCreationView: View {
     
     var body: some View {
         Form {
-            TextField("Name", text: $name)
-            TextField("Classification", text: $classification)
+            Section(header: Text("New technique")) {
+                TextField("Name", text: $name)
+                TextField("Classification", text: $classification)
+            }
             Section {
                 Button("Create and add to session") {
                     let newTechnique = Technique(

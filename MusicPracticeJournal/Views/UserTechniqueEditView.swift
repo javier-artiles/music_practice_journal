@@ -17,8 +17,10 @@ struct UserTechniqueEditView: View {
     
     var body: some View {
         Form {
-            TextField("Name", text: $name)
-            TextField("Classification", text: $classification)
+            Section(header: Text("Edit technique")) {
+                TextField("Name", text: $name)
+                TextField("Classification", text: $classification)
+            }
             Section {
                 Button("Update") {
                     technique.name = name

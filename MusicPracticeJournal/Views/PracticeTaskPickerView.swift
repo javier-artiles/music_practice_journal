@@ -21,6 +21,7 @@ struct TasksSearchResultsListView: View {
     @State var totalWorks: Int = 0
     @State var shouldLoadMoreWorks: Bool = false
     @State var showingTechniqueDeleteAlert: Bool = false
+    @State var showingWorkDeleteAlert: Bool = false
     
     var searchContext: SearchContext
     let pickedWork: (Work) -> Void
@@ -104,7 +105,6 @@ struct TasksSearchResultsListView: View {
                 }
             }
             
-            
             ForEach(works) { work in
                 Button {
                     pickedWork(work)
@@ -128,7 +128,37 @@ struct TasksSearchResultsListView: View {
                             }
                         }
                     }
-                }.buttonStyle(.plain)
+                }
+                .buttonStyle(.plain)
+                .alert(
+                    "Confirmation",
+                    isPresented: $showingWorkDeleteAlert
+                ) {
+                    Button("Delete", role: .destructive) {
+                        deleteWork(work)
+                    }
+                    Button("Cancel", role: .cancel) { }
+                }
+                message: {
+                    Text("Deleting this work will also remove all tasks associated to it on your practice sessions. Are you sure?")
+                }
+                .swipeActions {
+                    NavigationLink {
+                        UserWorkEditView(work: work)
+                    } label: {
+                        Text("Edit")
+                            
+                    }
+                    .tint(.green)
+                    if work.isUserCreated {
+                        Button {
+                            self.showingWorkDeleteAlert = true
+                        } label: {
+                            Text("Delete")
+                        }
+                        .tint(.red)
+                    }
+                }
             }
             ZStack {
             }.onAppear {
@@ -155,6 +185,41 @@ struct TasksSearchResultsListView: View {
         }
     }
     
+    private func deleteWork(_ work: Work) {
+        if work.isUserCreated {
+            do {
+                // Clean up all tasks that have been orphaned
+                let workId = work.id
+                let orphanedTasksDescriptor = FetchDescriptor<PracticeTask>(
+                    predicate: #Predicate<PracticeTask> { task in
+                        return task.work?.isUserCreated ?? false &&
+                            task.work?.id == workId
+                    }
+                )
+                let orphanedTasks = try modelContext.fetch(orphanedTasksDescriptor)
+                
+                for orphanedTask in orphanedTasks {
+                    if let session = orphanedTask.session  {
+                        session.practiceTasks.removeAll(where: {$0 === orphanedTask})
+                        for subTask in orphanedTask.practiceSubTasks {
+                            session.secsSpentPerSubItem.removeValue(forKey: subTask.id)
+                        }
+                    }
+                }
+                
+                for orphanedTask in orphanedTasks {
+                    print("Delete orphaned task: \(orphanedTask)")
+                    modelContext.delete(orphanedTask)
+                }
+                
+                modelContext.delete(work)
+                try modelContext.save()
+            } catch {
+                print("Error saving after deleting work: \(error)")
+            }
+        }
+    }
+    
     private func deleteTechnique(_ technique: Technique) {
         if technique.isUserCreated {
             do {
@@ -172,7 +237,7 @@ struct TasksSearchResultsListView: View {
                 let orphanedTasks = try modelContext.fetch(orphanedTasksDescriptor)
                 
                 for orphanedTask in orphanedTasks {
-                    for session in orphanedTask.sessions {
+                    if let session = orphanedTask.session {
                         session.practiceTasks.removeAll(where: {$0 === orphanedTask})
                         for subTask in orphanedTask.practiceSubTasks {
                             session.secsSpentPerSubItem.removeValue(forKey: subTask.id)
@@ -238,6 +303,7 @@ struct PracticeTaskPickerView: View {
     
     @State private var selection: Int = 0
     @State var presentUserTechniqueCreation: Bool = false
+    @State var presentUserWorkCreation: Bool = false
     
     let addNewPracticeItem: (PracticeTask) -> Void
     
@@ -251,7 +317,7 @@ struct PracticeTaskPickerView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Menu {
                     Button {
-                        
+                        presentUserWorkCreation.toggle()
                     } label: {
                         Text("Add a new work")
                     }
@@ -267,6 +333,9 @@ struct PracticeTaskPickerView: View {
         }
         .sheet(isPresented: $presentUserTechniqueCreation) {
             UserTechniqueCreationView(createdTechnique: createdTechnique)
+        }
+        .sheet(isPresented: $presentUserWorkCreation) {
+            UserWorkCreationView(createdWork: createdWork)
         }
         .searchable(
             text: $searchContext.query,
@@ -295,6 +364,15 @@ struct PracticeTaskPickerView: View {
         self.presentUserTechniqueCreation = false
         let practiceItem = PracticeTask(
             technique: technique
+        )
+        addNewPracticeItem(practiceItem)
+        dismiss()
+    }
+    
+    func createdWork(work: Work) {
+        self.presentUserWorkCreation = false
+        let practiceItem = PracticeTask(
+            work: work
         )
         addNewPracticeItem(practiceItem)
         dismiss()

@@ -18,8 +18,9 @@ final class Work: Decodable {
     var composerId: String?
     var instrumentation: [String]
     var isUserCreated: Bool
+    var userSuppliedURI: String?
     
-    internal init(id: String, title: String, alternativeTitle: String? = nil, composerName: String? = nil, composerId: String? = nil, instrumentation: [String] = [], isUserCreated: Bool = false) {
+    internal init(id: String, title: String, alternativeTitle: String? = nil, composerName: String? = nil, composerId: String? = nil, instrumentation: [String] = [], isUserCreated: Bool = false, userSuppliedURI: String? = nil) {
         self.id = id
         self.title = title
         self.alternativeTitle = alternativeTitle
@@ -27,6 +28,7 @@ final class Work: Decodable {
         self.composerId = composerId
         self.instrumentation = instrumentation
         self.isUserCreated = isUserCreated
+        self.userSuppliedURI = userSuppliedURI
     }
     
     required init(from decoder: Decoder) throws {
@@ -54,6 +56,7 @@ final class Work: Decodable {
             self.instrumentation = []
         }
         self.isUserCreated = false
+        self.userSuppliedURI = nil
     }
 }
 

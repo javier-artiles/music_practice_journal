@@ -74,6 +74,10 @@ struct PracticeSessionView: View {
                         .padding(.vertical, 10)
                     }
                     .onDelete(perform: deletePracticeItems)
+                    .onMove(perform: movePracticeItem)
+                }
+                .toolbar {
+                    EditButton()
                 }
                 .contentMargins(.top, 10)
                 Spacer()
@@ -185,13 +189,26 @@ struct PracticeSessionView: View {
     func addNewPracticeItem(practiceItem: PracticeTask) {
         let subItem = PracticeSubTask(name: "General practice");
         practiceItem.practiceSubTasks.append(subItem);
-        practiceSession.practiceTasks.append(practiceItem);
+        practiceSession.appendTask(practiceItem);
+        try? modelContext.save()
     }
     
     func deletePracticeItems(at offsets: IndexSet) {
         for offset in offsets {
             practiceSession.practiceTasks.remove(at: offset)
         }
+        try? modelContext.save()
+    }
+    
+    func movePracticeItem(from source: IndexSet, to destination: Int) {
+        // We move on a separate mutable array, since `practiceTasks` is a computed property
+        var mutableTasks = practiceSession.practiceTasks.map { $0 }
+        mutableTasks.move(fromOffsets: source, toOffset: destination)
+        // Update sort indexes
+        for i in 0 ..< mutableTasks.count {
+            mutableTasks[i].sortIndex = i
+        }
+        try? modelContext.save()
     }
 }
 

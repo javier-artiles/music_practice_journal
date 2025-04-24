@@ -8,8 +8,10 @@ struct MusicPracticeJournalApp: App {
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            PracticeSession.self,
+            Technique.self,
             Work.self,
+            PracticeTask.self,
+            PracticeSession.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
