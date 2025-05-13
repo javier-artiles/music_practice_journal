@@ -167,9 +167,23 @@ struct ExpandableMusicPlayer: View {
                 }
                 .frame(maxWidth: .infinity)
                 Spacer()
+                TabView {
+                    Tab("Metronome", systemImage: "metronome") {
+                        MetronomeView()
+                    }
+                    Tab("Tuner", systemImage: "gauge.with.dots.needle.33percent") {
+                        
+                    }
+                    Tab("Drone", systemImage: "tuningfork") {
+                        
+                    }
+                    Tab("Recorder", systemImage: "record.circle") {
+                        
+                    }
+                }
                 VStack(alignment: .leading) {
                     TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnCurrentSubTask())
-                            .font(.largeTitle)
+                            .font(.title)
                             .foregroundStyle(.gray)
                             .scaleEffect(2.0)
                 }

@@ -29,9 +29,22 @@
 		AE1345652D98B3FB0052F31B /* MusicPracticeJournalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MusicPracticeJournalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AE9F9AD72DBD062C004BADFE /* Exceptions for "MusicPracticeJournal" folder in "MusicPracticeJournal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AE1345472D98B3FA0052F31B /* MusicPracticeJournal */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AE13454A2D98B3FA0052F31B /* MusicPracticeJournal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AE9F9AD72DBD062C004BADFE /* Exceptions for "MusicPracticeJournal" folder in "MusicPracticeJournal" target */,
+			);
 			path = MusicPracticeJournal;
 			sourceTree = "<group>";
 		};
@@ -400,6 +413,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MusicPracticeJournal/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DaCapo;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -441,6 +455,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MusicPracticeJournal/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DaCapo;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
