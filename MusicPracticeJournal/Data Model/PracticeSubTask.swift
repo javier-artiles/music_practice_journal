@@ -8,14 +8,22 @@ final class PracticeSubTask {
     var practiceNotes: [PracticeNote]
     var sortIndex: Int
     
-    @Relationship(inverse: \PracticeTask.practiceSubTasksPersistent) var task: PracticeTask?
-     
+    @Relationship(deleteRule: .cascade, inverse: \AudioRecording.subTask)
+    var audioRecordings: [AudioRecording]? = []
     
-    init(id: UUID = UUID(), name: String? = nil, practiceNotes: [PracticeNote] = [], sortIndex: Int = 0) {
+    @Relationship(inverse: \PracticeTask.practiceSubTasksPersistent)
+    var task: PracticeTask?
+    
+    init(id: UUID = UUID(), name: String? = nil, practiceNotes: [PracticeNote] = [], sortIndex: Int = 0, audioRecordings: [AudioRecording] = []) {
         self.id = id
         self.name = name
         self.practiceNotes = practiceNotes
         self.sortIndex = sortIndex
+        self.audioRecordings = audioRecordings
         self.task = nil
+    }
+    
+    func generateDefaultAudioRecordingTitle() -> String {
+        return "Recording #\((audioRecordings?.count ?? 0) + 1)"
     }
 }

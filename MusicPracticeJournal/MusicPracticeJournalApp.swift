@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import AVFoundation
 
 enum DataImportState: String {
     case loadingWorks = "Loading works..."
@@ -23,8 +24,10 @@ struct MusicPracticeJournalApp: App {
             Work.self,
             PracticeTask.self,
             PracticeSession.self,
+            PracticeSubTask.self,
+            AudioRecording.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: ProcessInfo.processInfo.isSwiftUIPreview)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
@@ -58,6 +61,18 @@ struct MusicPracticeJournalApp: App {
                 }
             }
             .onAppear() {
+                //try? sharedModelContainer.mainContext.delete(model: AudioRecording.self)
+                
+                // Initialize audio
+                do {
+                    let session = AVAudioSession.sharedInstance()
+                    try session.setCategory(.playAndRecord, mode: .default, options: .mixWithOthers)
+                    try session.setActive(true)
+                } catch {
+                    print("Failed to set audio session category. Error: \(error)")
+                }
+                
+                // Populate works
                 let existingWorks = try! sharedModelContainer.mainContext.fetchCount(FetchDescriptor<Work>())
                 print("Number of existing works: \(existingWorks)")
                 if existingWorks > 0 {

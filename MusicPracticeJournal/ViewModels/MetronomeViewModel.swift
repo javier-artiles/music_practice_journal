@@ -208,7 +208,7 @@ class MetronomeViewModel: ObservableObject {
     private var clickAudioPlayer: AVAudioPlayer?
     private var accentAudioPlayer: AVAudioPlayer?
     
-    init() {
+    init() {	
         let userDefaults = UserDefaults.standard
         
         beatsPerMinute = max(
@@ -266,16 +266,6 @@ class MetronomeViewModel: ObservableObject {
     }
     
     private func loadSounds() {
-#if os(iOS)
-        do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, options: .mixWithOthers)
-            try session.setActive(true)
-        } catch {
-            print("Failed to set audio session category. Error: \(error)")
-        }
-#endif
-        
         guard let clickUrl = Bundle.main.url(forResource: "click-metronome-atonal-low", withExtension: "wav") else {
             fatalError("click sound not found.")
         }

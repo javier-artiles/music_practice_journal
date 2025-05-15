@@ -6,8 +6,16 @@ class PreviewExamples {
     
     static let previewContainer: ModelContainer = {
         do {
-            let config = ModelConfiguration(isStoredInMemoryOnly: true)
-            let container = try ModelContainer(for: Work.self, configurations: config)
+            let schema = Schema([
+                Technique.self,
+                Work.self,
+                PracticeTask.self,
+                PracticeSession.self,
+                AudioRecording.self
+            ])
+            let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+            let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
 
             for i in 1...99 {
                 let work = Work(
@@ -117,7 +125,6 @@ class PreviewExamples {
         );
     }
     
-    
     static func getPracticeSubItem() -> PracticeSubTask {
         return PracticeSubTask(
             name: "Planting",
@@ -132,4 +139,19 @@ class PreviewExamples {
         );
     }
     
+    static func getPracticeSubItemWithAudio() -> PracticeSubTask {
+        let subTask = getPracticeSubItem()
+        let audioRecording = getAudioRecording()
+        audioRecording.subTask = subTask
+        return subTask
+    }
+    
+    static func getAudioRecording() -> AudioRecording {
+        return AudioRecording(
+            id: "villa-lobos_bachiana_brasileira_no5",
+            type: "mp3",
+            title: "Villa Lobos - Bachiana Brasileira (No. 5)",
+            subTask: PreviewExamples.getPracticeSubItem()
+        )
+    }
 }

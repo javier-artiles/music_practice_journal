@@ -101,11 +101,9 @@ struct ContentView: View {
 }
 
 #Preview {
-    let currentSession = PreviewExamples.getCurrentPracticeSession();
-    
     RootView {
         ContentView()
     }
-    .environment(currentSession)
+    .environment(PreviewExamples.getCurrentPracticeSession())
     .modelContainer(PreviewExamples.previewContainer)
 }

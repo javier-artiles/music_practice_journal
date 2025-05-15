@@ -150,7 +150,7 @@ struct ExpandableMusicPlayer: View {
     /// Expanded Player
     @ViewBuilder
     func ExpandedPlayer(_ size: CGSize, _ safeArea: EdgeInsets) -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 0) {
             Capsule()
                 .fill(.white.secondary)
                 .frame(width: 35, height: 5)
@@ -168,57 +168,62 @@ struct ExpandableMusicPlayer: View {
                 .frame(maxWidth: .infinity)
                 Spacer()
                 TabView {
+                    Tab("Time", systemImage: "timer") {
+                        VStack(alignment: .leading) {
+                            TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnCurrentSubTask())
+                                    .font(.title)
+                                    .foregroundStyle(.gray)
+                                    .scaleEffect(2.0)
+                        }
+                        .padding(75)
+                        HStack(alignment: .center) {
+                            Spacer()
+                            Button()  {
+                                practiceSession.goToPrevSubtask()
+                            } label: {
+                                Image(systemName: "backward.fill")
+                                    .scaleEffect(2.5)
+                                    .padding(.leading, 5)
+                            }.disabled(!practiceSession.hasPrevSubTask())
+                            Spacer()
+                            Button()  {
+                                practiceSession.toggleTimer();
+                            } label: {
+                                Image(systemName:  practiceSession.isTimerRunning() ? "pause.fill" : "play.fill")
+                                    .scaleEffect(4)
+                                    .padding(.leading, 5)
+                            }
+                            Spacer()
+                            Button()  {
+                                practiceSession.goToNextSubtask()
+                            } label: {
+                                Image(systemName: "forward.fill")
+                                    .scaleEffect(2.5)
+                                    .padding(.leading, 5)
+                            }.disabled(!practiceSession.hasNextSubTask())
+                            Spacer()
+                        }
+                        .padding(.bottom, 75)
+                    }
                     Tab("Metronome", systemImage: "metronome") {
                         MetronomeView()
+                    }
+                    if let subTask = practiceSession.currentSubTask {
+                        Tab("Recorder", systemImage: "record.circle") {
+                            AudioClipToolView(subTask: subTask)
+                        }
                     }
                     Tab("Tuner", systemImage: "gauge.with.dots.needle.33percent") {
                         
                     }
-                    Tab("Drone", systemImage: "tuningfork") {
-                        
-                    }
-                    Tab("Recorder", systemImage: "record.circle") {
+                    Tab("Notes", systemImage: "note.text") {
                         
                     }
                 }
-                VStack(alignment: .leading) {
-                    TimeElapsedView(timeElapsedInSeconds: practiceSession.getSecsSpentOnCurrentSubTask())
-                            .font(.title)
-                            .foregroundStyle(.gray)
-                            .scaleEffect(2.0)
-                }
-                .padding(75)
-                HStack(alignment: .center) {
-                    Spacer()
-                    Button()  {
-                        practiceSession.goToPrevSubtask()
-                    } label: {
-                        Image(systemName: "backward.fill")
-                            .scaleEffect(2.5)
-                            .padding(.leading, 5)
-                    }.disabled(!practiceSession.hasPrevSubTask())
-                    Spacer()
-                    Button()  {
-                        practiceSession.toggleTimer();
-                    } label: {
-                        Image(systemName:  practiceSession.isTimerRunning() ? "pause.fill" : "play.fill")
-                            .scaleEffect(4)
-                            .padding(.leading, 5)
-                    }
-                    Spacer()
-                    Button()  {
-                        practiceSession.goToNextSubtask()
-                    } label: {
-                        Image(systemName: "forward.fill")
-                            .scaleEffect(2.5)
-                            .padding(.leading, 5)
-                    }.disabled(!practiceSession.hasNextSubTask())
-                    Spacer()
-                }
-                .padding(.bottom, 75)
+                .padding(.horizontal, 0)
             }
         }
-        .padding(15)
+        .padding(0)
         .padding(.top, safeArea.top)
     }
     
