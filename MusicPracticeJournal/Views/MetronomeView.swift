@@ -1,114 +1,121 @@
 import SwiftUI
 
+struct DynamicLongPressButton: View {
+    @Binding var counter: Int
+    let isIncrementing: Bool
+    
+    @State var timer: Timer?
+    @State private var isPressing = false
+    
+    var body: some View {
+        Image(systemName: isIncrementing ? "plus" : "minus")
+            .scaleEffect(2.5)
+            .padding(.leading, 5)
+            .onTapGesture {
+                addToCounter(1)
+            }
+            .onLongPressGesture(minimumDuration: 0.5) {
+                print("Long pressed!")
+                timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
+                    addToCounter(10)
+                })
+            } onPressingChanged: { inProgress in
+                print("In progress: \(inProgress)!")
+                if !inProgress {
+                    timer?.invalidate()
+                }
+            }
+    }
+    
+    func addToCounter(_ amount: Int) {
+        let newCount = counter + (isIncrementing ? amount : -amount)
+        counter = min(max(newCount, 1), 200)
+    }
+}
+
 struct MetronomeView: View {
-    @StateObject private var model = MetronomeViewModel()
+    @StateObject var model = MetronomeModel(beatsPerMinute: 120, timeSignature: .fourFour)
     
-    private var minBeatsPerMinute: Int { model.minBeatsPerMinute }
-    private var maxBeatsPerMinute: Int { model.maxBeatsPerMinute }
-    
-    @State private var lastTapTempoDate = Date.distantPast
     @State private var isTimeSignaturePickerPresented: Bool = false
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
+            Spacer()
+            
             /// First row
-            HStack {
-                ForEach(1 ..< model.beatsPerMeasure + 1, id: \.self) { beatIndicatorIndex in
+            HStack(alignment: .center, spacing: 25) {
+                ForEach(0 ..< model.timeSignature.getBeatsPerMeasure(), id: \.self) { beatIndicatorIndex in
                     Button {
                         model.toggleBeatSoundAtIndex(beatIndicatorIndex)
                     } label: {
                         Circle()
                             .stroke(getBeatIndicatorFill(at: beatIndicatorIndex), lineWidth: 4)
                             .fill(getBeatIndicatorFill(at: beatIndicatorIndex))
-                            .frame(width: 20, height: 20)
-                            .shadow(color: getBeatIndicatorFill(at: beatIndicatorIndex).opacity(model.beatIndex == beatIndicatorIndex ? 0.9 : 0.0), radius: 10)
-                            .padding()
+                            .frame(width: 30, height: 30)
+                            .shadow(color: getBeatIndicatorFill(at: beatIndicatorIndex).opacity(model.currentBeatIndex == beatIndicatorIndex ? 0.9 : 0.0), radius: 10)
                     }
                 }
             }
+            Spacer()
+            
             /// Second row
-            HStack(alignment: .center) {
-                Spacer()
-                Button() {
-                    model.beatsPerMinute -= 1
-                } label: {
-                    Image(systemName: "minus")
-                        .scaleEffect(2.5)
-                        .padding(.leading, 5)
-                }
-                .simultaneousGesture(LongPressGesture().onEnded { _ in
-                    model.beatsPerMinute -= 10
-                })
-                Spacer()
-                
-                HStack {
-                    Text(model.timeSignature.rawValue.1 == 2 ? "" : "")
-                        .font(.custom("Leland",size: 22))
-                        .padding(.top, 10)
-                    Text("= ")
-                    Text("\(model.beatsPerMinute)")
-                        .font(.largeTitle)
-                    Text("bpm")
-                        .font(.caption)
-                }
-                
-                Spacer()
-                Button() {
-                    model.beatsPerMinute += 1
-                } label: {
-                    Image(systemName: "plus")
-                        .scaleEffect(2.5)
-                        .padding(.leading, 5)
-                }
-                .simultaneousGesture(LongPressGesture().onEnded { _ in
-                    model.beatsPerMinute += 10
-                })
-                Spacer()
-            }
+            TextFieldStepper(
+                doubleValue: $model.beatsPerMinute,
+                //unit: "oz",
+                label: "BPM",
+                increment: 1.0,
+                minimum: model.minBeatsPerMinute,
+                maximum: model.maxBeatsPerMinute,
+                decrementImage: TextFieldStepperImage(
+                    systemName: "minus",
+                    color: .black,
+                    size: 35
+                ),
+                incrementImage: TextFieldStepperImage(
+                    systemName: "plus",
+                    color: .black,
+                    size: 35
+                ),
+            ).padding()
+            Spacer()
+            
             /// Third row
+            Button(action: {
+                self.isTimeSignaturePickerPresented = true
+            }) {
+                TimeSignatureView(timeSignature: model.timeSignature, isSelected: false)
+                    .padding()
+            }
+            .popover(isPresented: $isTimeSignaturePickerPresented) {
+                TimeSignaturePicker(selectedTimeSignature: $model.timeSignature)
+                   .padding()
+                   .frame(minWidth: 100, maxHeight: 100)
+                   .presentationCompactAdaptation(.popover)
+                   .onChange(of: model.timeSignature) { isTimeSignaturePickerPresented = false }
+            }
+            .padding(.vertical, 30)
+            
+            /// Fourth row
             HStack(alignment: .center) {
-                Button(action: {
-                    self.isTimeSignaturePickerPresented = true
-                }) {
-                    TimeSignatureView(timeSignature: model.timeSignature, isSelected: false)
-                        .padding()
-               }
-               .popover(isPresented: $isTimeSignaturePickerPresented) {
-                  TimeSignaturePicker(selectedTimeSignature: $model.timeSignature)
-                       .padding()
-                       .frame(minWidth: 100, maxHeight: 100)
-                       .presentationCompactAdaptation(.popover)
-                       .onChange(of: model.timeSignature) { isTimeSignaturePickerPresented = false }
-               }
                 Button() {
-                    model.isRunning.toggle()
+                    if model.isRunning {
+                        model.stopTimer()
+                    } else {
+                        model.startTimer()
+                    }
                 } label: {
                     Image(systemName: model.isRunning ? "stop.fill" : "play.fill")
-                        .scaleEffect(2.5)
-                        .padding(15)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
                 }
-                
-                Button() {
-                    model.soundEnabled.toggle()
-                } label: {
-                    Image(systemName: model.soundEnabled ? "speaker" : "speaker.slash")
-                        .scaleEffect(2.5)
-                        .padding(15)
-                }
-                
-                Button(action: tapTempo) {
-                    HStack {
-                        Image(systemName: "hand.tap")
-                    }
-                    .padding(6)
-                }
-                .buttonStyle(.borderedProminent)
-                .clipShape(.capsule)
+                .buttonStyle(.plain)
             }
+            Spacer()
         }
         .onAppear {
             model.timeSignature = .fourFour
-            model.beatsPerMinute = 60
+            model.beatsPerMinute = 120
         }
     }
     
@@ -120,18 +127,6 @@ struct MetronomeView: View {
         case .defaultSound: return .blue
         case .accentedSound: return .red
         }
-    }
-    
-    private func tapTempo() {
-        let now = Date.now
-        
-        let tapInterval = now.timeIntervalSince(lastTapTempoDate)
-        if tapInterval < 2.0 && tapInterval >= 0.2 {
-            let newBeatsPerMinute = 60.0 / tapInterval
-            model.beatsPerMinute = Int(newBeatsPerMinute.rounded())
-        }
-        
-        lastTapTempoDate = now
     }
 }
 

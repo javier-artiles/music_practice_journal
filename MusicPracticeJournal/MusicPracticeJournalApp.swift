@@ -61,12 +61,10 @@ struct MusicPracticeJournalApp: App {
                 }
             }
             .onAppear() {
-                //try? sharedModelContainer.mainContext.delete(model: AudioRecording.self)
-                
                 // Initialize audio
                 do {
                     let session = AVAudioSession.sharedInstance()
-                    try session.setCategory(.playAndRecord, mode: .default, options: .mixWithOthers)
+                    try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
                     try session.setActive(true)
                 } catch {
                     print("Failed to set audio session category. Error: \(error)")

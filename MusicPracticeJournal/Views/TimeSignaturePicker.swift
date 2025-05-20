@@ -60,6 +60,10 @@ struct TimeSignaturePicker: View {
 }
 
 
-#Preview {
+#Preview("View") {
+    TimeSignatureView(timeSignature: .fourFour, isSelected: false)
+}
+
+#Preview("Picker") {
     TimeSignaturePicker(selectedTimeSignature: .constant(.fourFour))
 }
