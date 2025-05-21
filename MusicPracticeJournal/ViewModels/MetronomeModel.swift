@@ -8,153 +8,32 @@ enum BeatSound {
     case accentedSound
 }
 
-enum TimeSignature: RawRepresentable, CaseIterable, Equatable {
-    case oneTwo
-    case twoTwo
-    case threeTwo
-    case fourTwo
-    case fiveTwo
-    case sixTwo
-    case sevenTwo
-    case eightTwo
-    case nineTwo
-    case tenTwo
-    case elevenTwo
-    case twelveTwo
-    case thirteenTwo
-    
-    case oneFour
-    case twoFour
-    case threeFour
-    case fourFour
-    case fiveFour
-    case sixFour
-    case sevenFour
-    case eightFour
-    case nineFour
-    case tenFour
-    case elevenFour
-    case twelveFour
-    case thirteenFour
-    
-    static func ==(lhs: TimeSignature, rhs: TimeSignature) -> Bool {
-        lhs.rawValue.0 == rhs.rawValue.0 && lhs.rawValue.1 == rhs.rawValue.1
-    }
-    
-    var rawValue: (Int, Int) {
-        switch self {
-        case .oneTwo: return (1, 2)
-        case .twoTwo: return (2, 2)
-        case .threeTwo: return (3, 2)
-        case .fourTwo: return (4, 2)
-        case .fiveTwo: return (5, 2)
-        case .sixTwo: return (6, 2)
-        case .sevenTwo: return (7, 2)
-        case .eightTwo: return (8, 2)
-        case .nineTwo: return (9, 2)
-        case .tenTwo: return (10, 2)
-        case .elevenTwo: return (11, 2)
-        case .twelveTwo: return (12, 2)
-        case .thirteenTwo: return (13, 2)
-        
-        case .oneFour: return (1, 4)
-        case .twoFour: return (2, 4)
-        case .threeFour: return (3, 4)
-        case .fourFour: return (4, 4)
-        case .fiveFour: return (5, 4)
-        case .sixFour: return (6, 4)
-        case .sevenFour: return (7, 4)
-        case .eightFour: return (8, 4)
-        case .nineFour: return (9, 4)
-        case .tenFour: return (10, 4)
-        case .elevenFour: return (11, 4)
-        case .twelveFour: return (12, 4)
-        case .thirteenFour: return (13, 4)
-        }
-    }
-
-    init?(rawValue: (Int, Int)) {
-        switch rawValue {
-        case (1, 2): self = .oneTwo
-        case (2, 2): self = .twoTwo
-        case (3, 2): self = .threeTwo
-        case (4, 2): self = .fourTwo
-        case (5, 2): self = .fiveTwo
-        case (6, 2): self = .sixTwo
-        case (7, 2): self = .sevenTwo
-        case (8, 2): self = .eightTwo
-        case (9, 2): self = .nineTwo
-        case (10, 2): self = .tenTwo
-        case (11, 2): self = .elevenTwo
-        case (12, 2): self = .twelveTwo
-        case (13, 2): self = .thirteenTwo
-        
-        case (1, 4): self = .oneFour
-        case (2, 4): self = .twoFour
-        case (3, 4): self = .threeFour
-        case (4, 4): self = .fourFour
-        case (5, 4): self = .fiveFour
-        case (6, 4): self = .sixFour
-        case (7, 4): self = .sevenFour
-        case (8, 4): self = .eightFour
-        case (9, 4): self = .nineFour
-        case (10, 4): self = .tenFour
-        case (11, 4): self = .elevenFour
-        case (12, 4): self = .twelveFour
-        case (13, 4): self = .thirteenFour
-        default: return nil
-        }
-    }
-    
-    func getNumeratorRepresentation() -> String {
-        return getNumeralRepresentation(rawValue.0)
-    }
-    
-    func getDenominatorRepresentation() -> String {
-        return getNumeralRepresentation(rawValue.1)
-    }
-    
-    func getNumeralRepresentation(_ number: Int) -> String {
-        switch number {
-        case 1: return ""
-        case 2: return ""
-        case 3: return ""
-        case 4: return ""
-        case 5: return ""
-        case 6: return ""
-        case 7: return ""
-        case 8: return ""
-        case 9: return ""
-        case 10: return ""
-        case 11: return ""
-        case 12: return ""
-        case 13: return ""
-            
-        default: return String(number)
-        }
-    }
-    
-    func getBeatsPerMeasure() -> Int {
-        return rawValue.0
-    }
-}
-
 class MetronomeModel: ObservableObject {
-    var timer: Timer?
+    let dispatchQueue = DispatchQueue(
+        label: "com.javart.MusicPracticeJournal.metronome",
+        qos: .userInteractive,
+        attributes: .concurrent
+    )
+    var timer: DispatchSourceTimer?
+    
     var lastBeatDate: Date?
     var audioPlayers: [AVAudioPlayer?] = []
     
     let minBeatsPerMinute: Double = 1
     let maxBeatsPerMinute: Double = 400
     
+    
+    let minBeatsPerMeasure: Int = 1
+    let maxBeatsPerMeasure: Int = 15
+    
     @Published var beatsPerMinute: Double {
         didSet {
             onUpdateBeatsPerMinute()
         }
     }
-    @Published var timeSignature: TimeSignature {
+    @Published var beatsPerMeasure: Int {
         didSet {
-            onUpdateTimeSignature()
+            onUpdateBeatsPerMeasure()
         }
     }
     @Published var currentBeatIndex: Int = -1
@@ -162,11 +41,9 @@ class MetronomeModel: ObservableObject {
     @Published var isRunning = false
     @Published var beatSounds: [BeatSound]
     
-    init(beatsPerMinute: Double, timeSignature: TimeSignature = .fourFour) {
+    init(beatsPerMinute: Double, beatsPerMeasure: Int) {
         self.beatsPerMinute = beatsPerMinute
-        self.timeSignature = timeSignature
-        
-        let beatsPerMeasure = timeSignature.getBeatsPerMeasure()
+        self.beatsPerMeasure = beatsPerMeasure
         self.beatSounds = Array(repeating: .defaultSound, count: beatsPerMeasure)
         beatSounds[0] = .accentedSound
         
@@ -179,8 +56,7 @@ class MetronomeModel: ObservableObject {
         }
     }
     
-    func onUpdateTimeSignature() {
-        let beatsPerMeasure = timeSignature.getBeatsPerMeasure()
+    func onUpdateBeatsPerMeasure() {
         self.beatSounds = Array(repeating: .defaultSound, count: beatsPerMeasure)
         beatSounds[0] = .accentedSound
         
@@ -222,7 +98,7 @@ class MetronomeModel: ObservableObject {
             }
             do {
                 let audioPlayer = try AVAudioPlayer(contentsOf: audioUrl)
-                audioPlayer.volume = beatSound == .accentedSound ? 1.0 : 0.2
+                audioPlayer.volume = 1.0
                 audioPlayer.prepareToPlay()
                 return audioPlayer
             } catch {
@@ -237,36 +113,54 @@ class MetronomeModel: ObservableObject {
         print("start timer")
         self.isRunning = true
         let beatInterval = 60.0 / Double(beatsPerMinute)
-        self.timer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
+        
+        self.timer = DispatchSource.makeTimerSource(
+            flags: .strict,
+            queue: dispatchQueue
+        )
+        self.timer?.setEventHandler { [weak self] in
+                    guard let self else { return }
             // Given the last beat date, can we advance to the next beat?
             if let lastBeatDate = self.lastBeatDate {
                 let timeInterval = Date.now.timeIntervalSince(lastBeatDate)
-                if timeInterval >= beatInterval {
+                let delta = timeInterval - beatInterval
+                // Trigger a click if we are within a range of the expected interval
+                // OR if we are past that interval, but need to fill in the click
+                if abs(delta) <= 0.001 || delta >= 0.01 {
+                    print(String(format: "click time interval delta:\t%.4f", timeInterval - beatInterval))
                     //print("CLICK")
                     var nextBeatIndex = self.currentBeatIndex + 1
-                    if nextBeatIndex >= self.timeSignature.getBeatsPerMeasure() {
+                    if nextBeatIndex >= self.beatsPerMeasure {
                         nextBeatIndex = 0
                     }
                     //print("Next beat index: \(nextBeatIndex)")
-                    self.currentBeatIndex = nextBeatIndex
-                    self.lastBeatDate = Date.now
-                    self.playBeatSound()
+                    DispatchQueue.main.async {
+                        self.currentBeatIndex = nextBeatIndex
+                        self.lastBeatDate = Date.now
+                        self.playBeatSound()
+                    }
                 }
             } else {
                 // This is the first click
                 //print("First CLICK")
-                self.currentBeatIndex = 0
-                self.lastBeatDate = Date.now
-                self.playBeatSound()
+                DispatchQueue.main.async {
+                    self.currentBeatIndex = 0
+                    self.lastBeatDate = Date.now
+                    self.playBeatSound()
+                }
                 return
             }
-        })
+        }
+        self.timer?.schedule(deadline: .now(), repeating: 0.001, leeway: .milliseconds(10))
+        self.timer?.activate()
     }
     
     func stopTimer() {
         self.isRunning = false
-        self.timer?.invalidate()
+        self.timer?.cancel()
+        self.timer = nil
         currentBeatIndex = -1
+        self.lastBeatDate = nil
     }
     
     func playBeatSound() {
