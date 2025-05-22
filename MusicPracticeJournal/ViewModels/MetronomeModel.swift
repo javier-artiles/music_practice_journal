@@ -9,6 +9,11 @@ enum BeatSound {
 }
 
 class MetronomeModel: ObservableObject {
+    private let audioEngine = AVAudioEngine()
+    private let playerNode = AVAudioPlayerNode()
+    private var accentAudioBuffer: AVAudioPCMBuffer?
+    private var defaultAudioBuffer: AVAudioPCMBuffer?
+    
     let dispatchQueue = DispatchQueue(
         label: "com.javart.MusicPracticeJournal.metronome",
         qos: .userInteractive,
@@ -16,16 +21,22 @@ class MetronomeModel: ObservableObject {
     )
     var timer: DispatchSourceTimer?
     
-    var lastBeatDate: Date?
-    var audioPlayers: [AVAudioPlayer?] = []
+    var lastBeatDate: Date = Date.now
     
     let minBeatsPerMinute: Double = 1
     let maxBeatsPerMinute: Double = 400
     
-    
     let minBeatsPerMeasure: Int = 1
     let maxBeatsPerMeasure: Int = 15
     
+    private var internalBeatIndex: Int = -1 {
+        didSet {
+            DispatchQueue.main.async {
+                self.currentBeatIndex = self.internalBeatIndex
+            }
+        }
+    }
+    @Published var currentBeatIndex: Int = -1
     @Published var beatsPerMinute: Double {
         didSet {
             onUpdateBeatsPerMinute()
@@ -36,7 +47,6 @@ class MetronomeModel: ObservableObject {
             onUpdateBeatsPerMeasure()
         }
     }
-    @Published var currentBeatIndex: Int = -1
     @Published var soundEnabled = true
     @Published var isRunning = false
     @Published var beatSounds: [BeatSound]
@@ -45,28 +55,42 @@ class MetronomeModel: ObservableObject {
         self.beatsPerMinute = beatsPerMinute
         self.beatsPerMeasure = beatsPerMeasure
         self.beatSounds = Array(repeating: .defaultSound, count: beatsPerMeasure)
+        
+        // Initialize audio
+        self.accentAudioBuffer = loadAudioBuffer(audioResource: "click-metronome-atonal-high")
+        self.defaultAudioBuffer = loadAudioBuffer(audioResource: "click-metronome-atonal-low")
+        
+        // Ensure we accent first beat by default
         beatSounds[0] = .accentedSound
         
-        // Initialize audio players for each beat
-        self.audioPlayers = []
-        for index in 0..<beatsPerMeasure {
-            let beatSound = beatSounds[index, default: .mute]
-            let audioPlayer = getAudioPlayer(beatSound: beatSound)
-            audioPlayers.append(audioPlayer)
+        // Wire engine
+        audioEngine.attach(playerNode)
+        audioEngine.connect(playerNode, to: audioEngine.mainMixerNode, format: accentAudioBuffer?.format)
+        audioEngine.prepare()
+        try? audioEngine.start()
+    }
+    
+    func loadAudioBuffer(audioResource: String) -> AVAudioPCMBuffer {
+        guard let audioURL = Bundle.main.url(forResource: audioResource, withExtension: "wav") else {
+            fatalError("click sound not found.")
         }
+        let audioFile = try! AVAudioFile(forReading: audioURL)
+        let audioFormat = audioFile.processingFormat
+        let totalFrames = UInt32(audioFile.length)
+        let audioBuffer = AVAudioPCMBuffer(pcmFormat: audioFormat, frameCapacity: totalFrames)!
+        do {
+            // Read the entire file into the buffer
+            try audioFile.read(into: audioBuffer)
+            // You can now use this buffer with AVAudioPlayerNode or other audio nodes
+        } catch {
+            print("Error reading into buffer: \(error)")
+        }
+        return audioBuffer
     }
     
     func onUpdateBeatsPerMeasure() {
         self.beatSounds = Array(repeating: .defaultSound, count: beatsPerMeasure)
         beatSounds[0] = .accentedSound
-        
-        // Initialize audio players for each beat
-        self.audioPlayers = []
-        for index in 0..<beatsPerMeasure {
-            let beatSound = beatSounds[index, default: .mute]
-            let audioPlayer = getAudioPlayer(beatSound: beatSound)
-            audioPlayers.append(audioPlayer)
-        }
     }
     
     func onUpdateBeatsPerMinute() {
@@ -78,35 +102,6 @@ class MetronomeModel: ObservableObject {
     
     func getBeatSoundAtIndex(_ index: Int) -> BeatSound {
         beatSounds[index, default: .mute]
-    }
-    
-    func getAudioPlayer(beatSound: BeatSound) -> AVAudioPlayer? {
-        var audioResource: String? = nil
-        switch beatSound {
-        case .mute:
-            audioResource = nil
-            break
-        case .defaultSound:
-            audioResource = "click-metronome-atonal-low"
-            break
-        case .accentedSound:
-            audioResource = "click-metronome-atonal-high"
-        }
-        if let audioResource = audioResource {
-            guard let audioUrl = Bundle.main.url(forResource: audioResource, withExtension: "wav") else {
-                fatalError("click sound not found.")
-            }
-            do {
-                let audioPlayer = try AVAudioPlayer(contentsOf: audioUrl)
-                audioPlayer.volume = 1.0
-                audioPlayer.prepareToPlay()
-                return audioPlayer
-            } catch {
-                fatalError("unable to load sound: \(error)")
-            }
-        } else {
-            return nil
-        }
     }
     
     func startTimer() {
@@ -121,34 +116,19 @@ class MetronomeModel: ObservableObject {
         self.timer?.setEventHandler { [weak self] in
                     guard let self else { return }
             // Given the last beat date, can we advance to the next beat?
-            if let lastBeatDate = self.lastBeatDate {
-                let timeInterval = Date.now.timeIntervalSince(lastBeatDate)
-                let delta = timeInterval - beatInterval
-                // Trigger a click if we are within a range of the expected interval
-                // OR if we are past that interval, but need to fill in the click
-                if abs(delta) <= 0.001 || delta >= 0.01 {
-                    print(String(format: "click time interval delta:\t%.4f", timeInterval - beatInterval))
-                    //print("CLICK")
-                    var nextBeatIndex = self.currentBeatIndex + 1
-                    if nextBeatIndex >= self.beatsPerMeasure {
-                        nextBeatIndex = 0
-                    }
-                    //print("Next beat index: \(nextBeatIndex)")
-                    DispatchQueue.main.async {
-                        self.currentBeatIndex = nextBeatIndex
-                        self.lastBeatDate = Date.now
-                        self.playBeatSound()
-                    }
+            let timeInterval = Date.now.timeIntervalSince(lastBeatDate)
+            let delta = timeInterval - beatInterval
+            // Trigger a click if we are within a range of the expected interval
+            if abs(delta) <= 0.001 || delta > 1.0 {
+                //print(String(format: "click time interval delta:\t%.4f", timeInterval - beatInterval))
+                var nextBeatIndex = self.internalBeatIndex + 1
+                if nextBeatIndex >= self.beatsPerMeasure {
+                    nextBeatIndex = 0
                 }
-            } else {
-                // This is the first click
-                //print("First CLICK")
-                DispatchQueue.main.async {
-                    self.currentBeatIndex = 0
-                    self.lastBeatDate = Date.now
-                    self.playBeatSound()
-                }
-                return
+                self.playBeatSound(atIndex: nextBeatIndex)
+                
+                self.internalBeatIndex = nextBeatIndex
+                self.lastBeatDate = Date.now
             }
         }
         self.timer?.schedule(deadline: .now(), repeating: 0.001, leeway: .milliseconds(10))
@@ -159,12 +139,24 @@ class MetronomeModel: ObservableObject {
         self.isRunning = false
         self.timer?.cancel()
         self.timer = nil
-        currentBeatIndex = -1
-        self.lastBeatDate = nil
+        self.internalBeatIndex = -1
     }
     
-    func playBeatSound() {
-        self.audioPlayers[self.currentBeatIndex]?.play()
+    func playBeatSound(atIndex: Int) {
+        switch beatSounds[atIndex, default: .mute] {
+        case .accentedSound:
+            playerNode.scheduleBuffer(accentAudioBuffer!, at: nil)
+            break
+        case .defaultSound:
+            playerNode.scheduleBuffer(defaultAudioBuffer!, at: nil)
+            break
+        case .mute:
+            return
+        }
+        playerNode.play()
+    
+        //let intervalSinceStartPlay = Date.now.timeIntervalSince(lastBeatDate)
+        //print(String(format: "intervalSinceStartPlay \(self.internalBeatIndex):\t%.4f", intervalSinceStartPlay))
     }
     
     public func toggleBeatSoundAtIndex(_ index: Int) -> Void {
@@ -179,6 +171,5 @@ class MetronomeModel: ObservableObject {
             newBeatSound = .accentedSound
         }
         beatSounds[index] = newBeatSound
-        audioPlayers[index] = getAudioPlayer(beatSound: newBeatSound)
     }
 }
